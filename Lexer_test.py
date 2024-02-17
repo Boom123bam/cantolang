@@ -14,43 +14,46 @@ input = '''
 '''
 
 expected_tokens = [
-   Token.COMMENT,
-   Token.INITIALIZE,
-   Token.IDENTIFIER,
-   Token.FULLSTOP,
-   Token.WHILE,
-   Token.OPEN_PAREN,
-   Token.IDENTIFIER,
-   Token.LESS_THAN,
-   Token.NUMBER,
-   Token.CLOSE_PAREN,
-   Token.SI,
-   Token.COMMA,
-   Token.THEN,
-   Token.OPEN_BRACE,
-   Token.IDENTIFIER,
-   Token.OPEN_PAREN,
-   Token.IDENTIFIER,
-   Token.CLOSE_PAREN,
-   Token.FULLSTOP,
-   Token.ASSIGN,
-   Token.IDENTIFIER,
-   Token.ADD,
-   Token.NUMBER,
-   Token.TO,
-   Token.IDENTIFIER,
-   Token.FULLSTOP,
-   Token.CLOSE_BRACE,
-   Token.IDENTIFIER,
-   Token.INCREMENT,
-   Token.FULLSTOP,
+    (Token.COMMENT,None),
+    (Token.INITIALIZE,"叫佢"),
+    (Token.IDENTIFIER,"i"),
+    (Token.FULLSTOP,"。"),
+    (Token.WHILE,"當"),
+    (Token.OPEN_PAREN,"（"),
+    (Token.IDENTIFIER,"i"),
+    (Token.LESS_THAN,"細過"),
+    (Token.NUMBER,"8"),
+    (Token.CLOSE_PAREN,"）"),
+    (Token.SI,"時"),
+    (Token.COMMA,"，"),
+    (Token.THEN, "就"),
+    (Token.OPEN_BRACE, "「"),
+    (Token.IDENTIFIER, "講"),
+    (Token.OPEN_PAREN, "（"),
+    (Token.IDENTIFIER, "i"),
+    (Token.CLOSE_PAREN, "）"),
+    (Token.FULLSTOP, "。"),
+    (Token.ASSIGN, "塞"),
+    (Token.IDENTIFIER, "i"),
+    (Token.ADD, "+"),
+    (Token.NUMBER, "1"),
+    (Token.TO, "入"),
+    (Token.IDENTIFIER, "i"),
+    (Token.FULLSTOP, "。"),
+    (Token.CLOSE_BRACE, "」"),
+    (Token.IDENTIFIER, "a"),
+    (Token.INCREMENT, "大D"),
+    (Token.FULLSTOP, "。"),
+    (Token.EOF, None),
 ]
 
 
 lexer = Lexer.Lexer(input)
-for expected in expected_tokens:
+i=0
+for [expected_type, expected_literal] in expected_tokens:
     got = lexer.read_token()
-    if got != expected:
-        raise ValueError(f'Expected "{expected}" got "{got}"')
-
-print("OK!")
+    if got.type != expected_type:
+        print(f'Tokens [{i}] Expected Type "{expected_type}" got "{got.type}"')
+    if got.literal != expected_literal:
+        print(f'Tokens [{i}] Expected Literal "{expected_literal}" got "{got.literal}"')
+    i+= 1

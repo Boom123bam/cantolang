@@ -27,11 +27,12 @@ class Lexer:
             self.advance()
         return result
 
-    def read_token(self):
+    def read_token(self) -> Token.Token:
+
         while self._char in [" ", "\n", "\r", "\t"]:
             self.advance()
         if not self._char:
-            return 0
+            return Token.Token(Token.EOF)
 
         # double char tokens
         if self._char in [
@@ -60,17 +61,17 @@ class Lexer:
             tok = self._char + self._peek_char
             self.advance()
             self.advance()
-            return tok
+            return Token.Token(tok, tok)
 
         elif self._char.isdigit():
             n = self.read_number()
-            return Token.NUMBER
+            return Token.Token(Token.NUMBER, n)
 
         elif self._char + self._peek_char == "//":
             # commemt, skip until new line
             while not self._char == "\n":
                 self.advance()
-            return Token.COMMENT
+            return Token.Token(Token.COMMENT)
 
         # single char tokens
         elif self._char in [
@@ -93,11 +94,11 @@ class Lexer:
         ]:
             c = self._char
             self.advance()
-            return c
+            return Token.Token(c,c)
 
         # else identifier
         i = self.read_identifier()
         if not i:
             self.advance()
-            return Token.INVALID
-        return Token.IDENTIFIER
+            return Token.Token(Token.INVALID)
+        return Token.Token(Token.IDENTIFIER,i)

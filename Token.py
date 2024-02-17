@@ -62,8 +62,9 @@ IDENTIFIER = "IDENTIFIER"
 INVALID = "INVALID"
 COMMENT = "COMMENT"
 NUMBER = "NUMBER"
+EOF = "EOF"
 
 class Token:
-    def __init__(self, type, literal):
+    def __init__(self, type, literal = None):
         self.type = type
         self.literal = literal
