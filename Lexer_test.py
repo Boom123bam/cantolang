@@ -9,6 +9,8 @@ input = '''
         講（i）。
         塞 i + 1 入 i。
     」
+
+    a 大D。
 '''
 
 expected_tokens = [
@@ -39,6 +41,9 @@ expected_tokens = [
    Token.IDENTIFIER,
    Token.FULLSTOP,
    Token.CLOSE_BRACE,
+   Token.IDENTIFIER,
+   Token.INCREMENT,
+   Token.FULLSTOP,
 ]
 
 

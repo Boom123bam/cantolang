@@ -43,6 +43,8 @@ class Lexer:
             Token.NOT[0],
             Token.IF[0],
             Token.GEWA[0],
+            Token.INCREMENT[0],
+            Token.DECREMENT[0],
         ] and self._char + self._peek_char in [
             Token.INITIALIZE,
             Token.LESS_THAN,
@@ -52,6 +54,8 @@ class Lexer:
             Token.NOT,
             Token.IF,
             Token.GEWA,
+            Token.INCREMENT,
+            Token.DECREMENT,
         ]:
             tok = self._char + self._peek_char
             self.advance()

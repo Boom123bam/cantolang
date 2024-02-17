@@ -34,6 +34,9 @@ DIVIDE = "/"
 # MULTIPLY = "乘"
 # DIVIDE = "除"
 
+INCREMENT = "大D"
+DECREMENT = "細D"
+
 INITIALIZE = "叫佢"
 
 ASSIGN = "塞"

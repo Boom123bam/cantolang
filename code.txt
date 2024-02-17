@@ -4,6 +4,10 @@
 // assignment
 塞 0 入 i。
 
+// increment, decrement
+a 大D。
+a 細D。
+
 // compare
 （a 係 b）
 （a 細過 b）
