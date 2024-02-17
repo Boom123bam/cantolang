@@ -32,7 +32,7 @@ TO = "入"
 
 EQUAL_TO = "係"
 LESS_THAN = "細過"
-GREATER_THAN = "多過"
+GREATER_THAN = "大過"
 
 AND = "同埋"
 OR = "或者"
