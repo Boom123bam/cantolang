@@ -20,6 +20,13 @@ class Lexer:
             self.advance()
         return result
 
+    def read_number(self):
+        result = ""
+        while self._char.isdigit():
+            result += self._char
+            self.advance()
+        return result
+
     def read_token(self):
         while self._char in [" ", "\n", "\r", "\t"]:
             self.advance()
@@ -40,6 +47,10 @@ class Lexer:
             Token.THEN,
             Token.WHILE,
             Token.SI,
+            Token.ADD,
+            Token.MINUS,
+            Token.MULTIPLY,
+            Token.DIVIDE,
         ]:
             c = self._char
             self.advance()
@@ -69,6 +80,10 @@ class Lexer:
             self.advance()
             self.advance()
             return tok
+
+        elif self._char.isdigit():
+            n = self.read_number()
+            return Token.NUMBER
 
         elif self._char + self._peek_char == "//":
             # commemt, skip until new line

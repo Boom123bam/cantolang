@@ -25,6 +25,15 @@ CLOSE_BRACE = "」"
 FULLSTOP = "。"
 COMMA = "，"
 
+ADD = "+"
+MINUS = "-"
+MULTIPLY = "*"
+DIVIDE = "/"
+# ADD = "加"
+# MINUS = "減"
+# MULTIPLY = "乘"
+# DIVIDE = "除"
+
 INITIALIZE = "叫佢"
 
 ASSIGN = "塞"
@@ -49,6 +58,7 @@ SI = "時"
 IDENTIFIER = "IDENTIFIER"
 INVALID = "INVALID"
 COMMENT = "COMMENT"
+NUMBER = "NUMBER"
 
 class Token:
     def __init__(self, type, literal):
