@@ -36,7 +36,7 @@ func TestLexer(t *testing.T) {
 		{token.COMMA, "，"},
 		{token.THEN, "就"},
 		{token.OPEN_BRACE, "「"},
-		{token.INVALID, "講"},
+		{token.IDENTIFIER, "講"},
 		{token.OPEN_PAREN, "（"},
 		{token.IDENTIFIER, "i"},
 		{token.CLOSE_PAREN, "）"},

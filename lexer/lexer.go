@@ -36,11 +36,47 @@ func (l *Lexer) advance() {
 
 func (l *Lexer) read_identifier() string {
 	result := ""
-	for (l.char >= 'a' && l.char <= 'z') || (l.char >= 'A' && l.char <= 'Z') || l.char == '_' {
+	for is_allowed_in_ident(l.char) {
 		result += string(l.char)
 		l.advance()
 	}
 	return result
+}
+
+func is_allowed_in_ident(char rune) bool {
+	restricted := []rune(" 1234567890!@#$%^&*/" +
+		token.OPEN_PAREN +
+		token.CLOSE_PAREN +
+		token.OPEN_BRACE +
+		token.CLOSE_BRACE +
+		token.FULLSTOP +
+		token.COMMA +
+		token.ADD +
+		token.MINUS +
+		token.MULTIPLY +
+		token.DIVIDE +
+		token.INCREMENT +
+		token.DECREMENT +
+		token.INITIALIZE +
+		token.ASSIGN +
+		token.TO +
+		token.EQUAL_TO +
+		token.LESS_THAN +
+		token.GREATER_THAN +
+		token.AND +
+		token.OR +
+		token.NOT +
+		token.IF +
+		token.GEWA +
+		token.THEN +
+		token.WHILE +
+		token.SI)
+	for _, c := range restricted {
+		if c == char {
+			return false
+		}
+	}
+	return true
 }
 
 func (l *Lexer) read_number() string {
