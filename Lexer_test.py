@@ -1,37 +1,51 @@
 import Lexer
+import Token
 
-lexer = Lexer.Lexer(
-    '''
+input = '''
     // initialize
     叫佢 i。
 
-    // assignment
-    塞 0 入 i。
-
-    // compare
-    （a 係 b）
-    （a 細過 b）
-    （a 大過 b）
-
-    // logic
-    a 同埋 b
-    a 或者 b
-    唔係 a
-
-    // if conditional
-    如果 （唔係（a 係 b）） 嘅話，就「
-        講（“OK”）。
-    」
-
-    // while loop
-    當 （i 細過 12） 時，就「
+    當 （i 細過 8） 時，就「
         講（i）。
         塞 i + 1 入 i。
     」
-''')
+'''
+
+expected_tokens = [
+   Token.COMMENT,
+   Token.INITIALIZE,
+   Token.IDENTIFIER,
+   Token.FULLSTOP,
+   Token.WHILE,
+   Token.OPEN_PAREN,
+   Token.IDENTIFIER,
+   Token.LESS_THAN,
+   Token.NUMBER,
+   Token.CLOSE_PAREN,
+   Token.SI,
+   Token.COMMA,
+   Token.THEN,
+   Token.OPEN_BRACE,
+   Token.IDENTIFIER,
+   Token.OPEN_PAREN,
+   Token.IDENTIFIER,
+   Token.CLOSE_PAREN,
+   Token.FULLSTOP,
+   Token.ASSIGN,
+   Token.IDENTIFIER,
+   Token.ADD,
+   Token.NUMBER,
+   Token.TO,
+   Token.IDENTIFIER,
+   Token.FULLSTOP,
+   Token.CLOSE_BRACE,
+]
 
 
-tok = lexer.read_token()
-while tok:
-    print(tok)
-    tok = lexer.read_token()
+lexer = Lexer.Lexer(input)
+for expected in expected_tokens:
+    got = lexer.read_token()
+    if got != expected:
+        raise ValueError(f'Expected "{expected}" got "{got}"')
+
+print("OK!")
