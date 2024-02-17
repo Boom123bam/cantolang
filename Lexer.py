@@ -33,31 +33,8 @@ class Lexer:
         if not self._char:
             return 0
 
-        # single char tokens
-        if self._char in [
-            Token.OPEN_PAREN,
-            Token.CLOSE_PAREN,
-            Token.OPEN_BRACE,
-            Token.CLOSE_BRACE,
-            Token.FULLSTOP,
-            Token.COMMA,
-            Token.ASSIGN,
-            Token.TO,
-            Token.EQUAL_TO,
-            Token.THEN,
-            Token.WHILE,
-            Token.SI,
-            Token.ADD,
-            Token.MINUS,
-            Token.MULTIPLY,
-            Token.DIVIDE,
-        ]:
-            c = self._char
-            self.advance()
-            return c
-
         # double char tokens
-        elif self._char in [
+        if self._char in [
             Token.INITIALIZE[0],
             Token.LESS_THAN[0],
             Token.GREATER_THAN[0],
@@ -90,6 +67,29 @@ class Lexer:
             while not self._char == "\n":
                 self.advance()
             return Token.COMMENT
+
+        # single char tokens
+        elif self._char in [
+            Token.OPEN_PAREN,
+            Token.CLOSE_PAREN,
+            Token.OPEN_BRACE,
+            Token.CLOSE_BRACE,
+            Token.FULLSTOP,
+            Token.COMMA,
+            Token.ASSIGN,
+            Token.TO,
+            Token.EQUAL_TO,
+            Token.THEN,
+            Token.WHILE,
+            Token.SI,
+            Token.ADD,
+            Token.MINUS,
+            Token.MULTIPLY,
+            Token.DIVIDE,
+        ]:
+            c = self._char
+            self.advance()
+            return c
 
         # else identifier
         i = self.read_identifier()
