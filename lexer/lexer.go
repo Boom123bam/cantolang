@@ -11,8 +11,8 @@ type Lexer struct {
 	peekChar rune
 }
 
-func new(input string) Lexer {
-	l := Lexer{
+func New(input string) *Lexer {
+	l := &Lexer{
 		input: []rune(input),
 	}
 	l.pos = -1
@@ -88,7 +88,7 @@ func (l *Lexer) readNumber() string {
 	return result
 }
 
-func (l *Lexer) readToken() token.Token {
+func (l *Lexer) ReadToken() token.Token {
 	for l.char == ' ' || l.char == '\n' || l.char == '\r' || l.char == '\t' {
 		l.advance()
 	}

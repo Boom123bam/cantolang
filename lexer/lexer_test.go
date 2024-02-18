@@ -54,9 +54,9 @@ func TestLexer(t *testing.T) {
 		{token.FULLSTOP, "。"},
 		{token.EOF, ""},
 	}
-	l := new(input)
+	l := New(input)
 	for i, exp := range expectedTokens {
-		got := l.readToken()
+		got := l.ReadToken()
 		if got.TokenLiteral != exp.Literal {
 			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
 		}
