@@ -18,7 +18,7 @@ func TestLexer(t *testing.T) {
     a 大D。
 `
 
-	expected_tokens := []struct {
+	expectedTokens := []struct {
 		Type    string
 		Literal string
 	}{
@@ -55,8 +55,8 @@ func TestLexer(t *testing.T) {
 		{token.EOF, ""},
 	}
 	l := new(input)
-	for i, exp := range expected_tokens {
-		got := l.read_token()
+	for i, exp := range expectedTokens {
+		got := l.readToken()
 		if got.TokenLiteral != exp.Literal {
 			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
 		}

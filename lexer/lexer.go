@@ -5,10 +5,10 @@ import (
 )
 
 type Lexer struct {
-	input     []rune
-	pos       int
-	char      rune
-	peek_char rune
+	input    []rune
+	pos      int
+	char     rune
+	peekChar rune
 }
 
 func new(input string) Lexer {
@@ -28,22 +28,22 @@ func (l *Lexer) advance() {
 		l.char = 0
 	}
 	if l.pos+1 < len(l.input) {
-		l.peek_char = l.input[l.pos+1]
+		l.peekChar = l.input[l.pos+1]
 	} else {
-		l.peek_char = 0
+		l.peekChar = 0
 	}
 }
 
-func (l *Lexer) read_identifier() string {
+func (l *Lexer) readIdentifier() string {
 	result := ""
-	for is_allowed_in_ident(l.char) {
+	for isAllowedInIdent(l.char) {
 		result += string(l.char)
 		l.advance()
 	}
 	return result
 }
 
-func is_allowed_in_ident(char rune) bool {
+func isAllowedInIdent(char rune) bool {
 	restricted := []rune(" 1234567890!@#$%^&*/" +
 		token.OPEN_PAREN +
 		token.CLOSE_PAREN +
@@ -79,7 +79,7 @@ func is_allowed_in_ident(char rune) bool {
 	return true
 }
 
-func (l *Lexer) read_number() string {
+func (l *Lexer) readNumber() string {
 	result := ""
 	for l.char >= '0' && l.char <= '9' {
 		result += string(l.char)
@@ -88,7 +88,7 @@ func (l *Lexer) read_number() string {
 	return result
 }
 
-func (l *Lexer) read_token() token.Token {
+func (l *Lexer) readToken() token.Token {
 	for l.char == ' ' || l.char == '\n' || l.char == '\r' || l.char == '\t' {
 		l.advance()
 	}
@@ -100,63 +100,63 @@ func (l *Lexer) read_token() token.Token {
 	}
 	// double char tokens
 	var t token.Token
-	switch string(l.char) + string(l.peek_char) {
+	switch string(l.char) + string(l.peekChar) {
 	case token.INITIALIZE:
-		if string(l.char)+string(l.peek_char) == token.INITIALIZE {
+		if string(l.char)+string(l.peekChar) == token.INITIALIZE {
 			t.TokenType = token.INITIALIZE
 			t.TokenLiteral = token.INITIALIZE
 			l.advance()
 		}
 	case token.LESS_THAN:
-		if string(l.char)+string(l.peek_char) == token.LESS_THAN {
+		if string(l.char)+string(l.peekChar) == token.LESS_THAN {
 			t.TokenType = token.LESS_THAN
 			t.TokenLiteral = token.LESS_THAN
 			l.advance()
 		}
 	case token.GREATER_THAN:
-		if string(l.char)+string(l.peek_char) == token.GREATER_THAN {
+		if string(l.char)+string(l.peekChar) == token.GREATER_THAN {
 			t.TokenType = token.GREATER_THAN
 			t.TokenLiteral = token.GREATER_THAN
 			l.advance()
 		}
 	case token.AND:
-		if string(l.char)+string(l.peek_char) == token.AND {
+		if string(l.char)+string(l.peekChar) == token.AND {
 			t.TokenType = token.AND
 			t.TokenLiteral = token.AND
 			l.advance()
 		}
 	case token.OR:
-		if string(l.char)+string(l.peek_char) == token.OR {
+		if string(l.char)+string(l.peekChar) == token.OR {
 			t.TokenType = token.OR
 			t.TokenLiteral = token.OR
 			l.advance()
 		}
 	case token.NOT:
-		if string(l.char)+string(l.peek_char) == token.NOT {
+		if string(l.char)+string(l.peekChar) == token.NOT {
 			t.TokenType = token.NOT
 			t.TokenLiteral = token.NOT
 			l.advance()
 		}
 	case token.IF:
-		if string(l.char)+string(l.peek_char) == token.IF {
+		if string(l.char)+string(l.peekChar) == token.IF {
 			t.TokenType = token.IF
 			t.TokenLiteral = token.IF
 			l.advance()
 		}
 	case token.GEWA:
-		if string(l.char)+string(l.peek_char) == token.GEWA {
+		if string(l.char)+string(l.peekChar) == token.GEWA {
 			t.TokenType = token.GEWA
 			t.TokenLiteral = token.GEWA
 			l.advance()
 		}
 	case token.INCREMENT:
-		if string(l.char)+string(l.peek_char) == token.INCREMENT {
+		if string(l.char)+string(l.peekChar) == token.INCREMENT {
 			t.TokenType = token.INCREMENT
 			t.TokenLiteral = token.INCREMENT
 			l.advance()
 		}
 	case token.DECREMENT:
-		if string(l.char)+string(l.peek_char) == token.DECREMENT {
+		if string(l.char)+string(l.peekChar) == token.DECREMENT {
 			t.TokenType = token.DECREMENT
 			t.TokenLiteral = token.DECREMENT
 			l.advance()
@@ -227,11 +227,11 @@ func (l *Lexer) read_token() token.Token {
 	default:
 		if l.char >= '0' && l.char <= '9' {
 			t.TokenType = token.NUMBER
-			t.TokenLiteral = l.read_number()
+			t.TokenLiteral = l.readNumber()
 			return t
 		}
 
-		i := l.read_identifier()
+		i := l.readIdentifier()
 		if i == "" {
 			t.TokenType = token.INVALID
 			t.TokenLiteral = string(l.char)
