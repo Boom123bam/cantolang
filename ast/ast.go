@@ -30,9 +30,13 @@ type IntegerLiteral struct {
 
 type PrefixExpression struct {
 	PrefixToken token.Token
-	Expression  Expression
+	Right       Expression
 }
 
 func (il *IntegerLiteral) token() *token.Token {
 	return &il.Token
+}
+
+func (pe *PrefixExpression) token() *token.Token {
+	return &pe.PrefixToken
 }

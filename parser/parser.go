@@ -91,10 +91,15 @@ func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	statement := &ast.ExpressionStatement{Token: p.currentToken}
 	statement.Expression = p.parseExpression(LOWEST)
+	p.advance()
+	if p.currentToken.TokenType == token.FULLSTOP {
+		p.advance()
+	}
 	return statement
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
+	fmt.Printf("PARSING exp at %s\n", p.currentToken.TokenLiteral)
 	// check for prefix
 	var left ast.Expression
 	for _, prefix := range p.prefixes {
@@ -106,21 +111,17 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	if left == nil {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}
-	p.advance()
 
-	for p.currentToken.TokenType != token.FULLSTOP && precedence < precedences[p.currentToken.TokenType] {
+	for p.peekToken.TokenType != token.FULLSTOP && precedence < precedences[p.peekToken.TokenType] {
+		p.advance()
 		// check for infix
 		if p.isInfix(p.peekToken.TokenType) {
 			left = p.parseInfixExpression(left)
 			continue
 		}
 		p.errors = append(p.errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
-		p.advance()
 	}
-
-	if p.currentToken.TokenType == token.FULLSTOP {
-		p.advance()
-	}
+	fmt.Printf("RETURN at %s\n", p.currentToken.TokenLiteral)
 	return left
 }
 
@@ -134,9 +135,12 @@ func (p *Parser) isInfix(tokenType string) bool {
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
-	// TODO
-	return nil
+	expression := &ast.PrefixExpression{PrefixToken: p.currentToken}
+	p.advance()
+	expression.Right = p.parseExpression(PREFIX)
+	return expression
 }
+
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	// TODO
 	return nil

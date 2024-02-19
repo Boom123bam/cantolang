@@ -57,7 +57,7 @@ func TestIntegerStatements(t *testing.T) {
 	checkParserErrors(p, t)
 
 	if len(program.Statements) != 2 {
-		t.Errorf("len(program) expected 3 got %d", len(program.Statements))
+		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
 	}
 
 	for i, st := range program.Statements {
@@ -69,6 +69,53 @@ func TestIntegerStatements(t *testing.T) {
 			t.Errorf("[%d] expected tokenType '%s' got %s", i, token.NUMBER, exprStatement.Token.TokenType)
 		}
 		if exprStatement.Token.TokenLiteral != expected[i] {
+			t.Errorf("[%d] expected token literal '%s' got %s", i, expected[i], exprStatement.Token.TokenLiteral)
+		}
+	}
+}
+
+func TestPrefixStatements(t *testing.T) {
+	input := `
+	-2。
+	-1。
+	唔係5。
+	`
+	expected := []struct {
+		prefix string
+		right  string
+	}{
+		{"-", "2"},
+		{"-", "1"},
+		{"唔係", "5"},
+	}
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+
+	if len(program.Statements) != 3 {
+		t.Errorf("len(program) expected 3 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		prefixExp, ok := exprStatement.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Errorf("[%d] expected type ast.PrefixExpression got %T", i, exprStatement.Expression)
+		}
+		right, ok := prefixExp.Right.(*ast.IntegerLiteral)
+		if !ok {
+			t.Errorf("[%d] expected type ast.IntegerLiteral got %T", i, prefixExp.Right)
+		}
+		if prefixExp.PrefixToken.TokenLiteral != expected[i].prefix {
+			t.Errorf("[%d] expected prefix '%s' got %s", i, expected[i].prefix, prefixExp.PrefixToken.TokenLiteral)
+		}
+		if right.Token.TokenLiteral != expected[i].right {
 			t.Errorf("[%d] expected token literal '%s' got %s", i, expected[i], exprStatement.Token.TokenLiteral)
 		}
 	}
