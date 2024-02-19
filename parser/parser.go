@@ -102,13 +102,9 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	fmt.Printf("PARSING exp at %s\n", p.currentToken.TokenLiteral)
 	// check for prefix
 	var left ast.Expression
-	for _, prefix := range p.prefixes {
-		if p.currentToken.TokenType == prefix {
-			left = p.parsePrefixExpression()
-		}
-	}
-	// if no prefix set left
-	if left == nil {
+	if p.isPrefix(p.currentToken.TokenType) {
+		left = p.parsePrefixExpression()
+	} else {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}
 
@@ -123,6 +119,15 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	fmt.Printf("RETURN at %s\n", p.currentToken.TokenLiteral)
 	return left
+}
+
+func (p *Parser) isPrefix(tokenType string) bool {
+	for _, prefix := range p.prefixes {
+		if tokenType == prefix {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Parser) isInfix(tokenType string) bool {
