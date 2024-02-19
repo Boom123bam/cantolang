@@ -115,7 +115,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	for p.peekToken.TokenType != token.FULLSTOP && precedence < precedences[p.peekToken.TokenType] {
 		p.advance()
 		// check for infix
-		if p.isInfix(p.peekToken.TokenType) {
+		if p.isInfix(p.currentToken.TokenType) {
 			left = p.parseInfixExpression(left)
 			continue
 		}
@@ -142,8 +142,16 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 }
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	// TODO
-	return nil
+	expression := &ast.InfixExpression{Left: left, Infix: p.currentToken}
+	precedence, ok := precedences[expression.Infix.TokenType]
+	if !ok {
+		p.errors = append(p.errors, fmt.Sprintf("Infix not found: %s", expression.Infix.TokenType))
+		p.advance()
+		return nil
+	}
+	p.advance()
+	expression.Right = p.parseExpression(precedence)
+	return expression
 }
 
 func (p *Parser) ParseProgram() *ast.Program {

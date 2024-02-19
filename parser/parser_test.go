@@ -120,3 +120,36 @@ func TestPrefixStatements(t *testing.T) {
 		}
 	}
 }
+
+func TestInfixStatements(t *testing.T) {
+	input := `
+	1-1。
+	1+2+3。
+	1+3*2/5。
+	`
+	expected := []string{
+		"(1 - 1)",
+		"((1 + 2) + 3)",
+		"(1 + ((3 * 2) / 5))",
+	}
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 3 {
+		t.Errorf("len(program) expected 3 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		if exprStatement.Expression.String() != expected[i] {
+			t.Errorf("[%d] expected string %s got %s", i, expected[i], exprStatement.Expression.String())
+		}
+	}
+
+}
