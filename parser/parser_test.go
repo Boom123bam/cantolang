@@ -126,11 +126,15 @@ func TestInfixStatements(t *testing.T) {
 	1-1。
 	1+2+3。
 	1+3*2/5。
+	10+x。
+	hello+world。
 	`
 	expected := []string{
 		"(1 - 1)",
 		"((1 + 2) + 3)",
 		"(1 + ((3 * 2) / 5))",
+		"(10 + x)",
+		"(hello + world)",
 	}
 
 	l := lexer.New(input)
@@ -138,8 +142,8 @@ func TestInfixStatements(t *testing.T) {
 	// p.ParseProgram()
 	program := p.ParseProgram()
 	checkParserErrors(p, t)
-	if len(program.Statements) != 3 {
-		t.Errorf("len(program) expected 3 got %d", len(program.Statements))
+	if len(program.Statements) != len(expected) {
+		t.Errorf("len(program) expected %d got %d", len(expected), len(program.Statements))
 	}
 
 	for i, st := range program.Statements {

@@ -104,6 +104,8 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	var left ast.Expression
 	if p.isPrefix(p.currentToken.TokenType) {
 		left = p.parsePrefixExpression()
+	} else if p.currentToken.TokenType == token.IDENTIFIER {
+		left = &ast.Identifier{Token: p.currentToken}
 	} else {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}

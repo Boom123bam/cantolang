@@ -29,6 +29,10 @@ type IntegerLiteral struct {
 	Token token.Token
 }
 
+type Identifier struct {
+	Token token.Token
+}
+
 type PrefixExpression struct {
 	PrefixToken token.Token
 	Right       Expression
@@ -45,6 +49,13 @@ func (il *IntegerLiteral) token() *token.Token {
 }
 func (il *IntegerLiteral) String() string {
 	return il.Token.TokenLiteral
+}
+
+func (i *Identifier) token() *token.Token {
+	return &i.Token
+}
+func (i *Identifier) String() string {
+	return i.Token.TokenLiteral
 }
 
 func (pe *PrefixExpression) token() *token.Token {
