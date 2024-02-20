@@ -128,6 +128,9 @@ func TestInfixStatements(t *testing.T) {
 	1+3*2/5。
 	10+x。
 	hello+world。
+	（1 + 2） + 3。
+	1 + （2 + 3）。
+	1 * （2 + 3）。
 	`
 	expected := []string{
 		"(1 - 1)",
@@ -135,6 +138,9 @@ func TestInfixStatements(t *testing.T) {
 		"(1 + ((3 * 2) / 5))",
 		"(10 + x)",
 		"(hello + world)",
+		"((1 + 2) + 3)",
+		"(1 + (2 + 3))",
+		"(1 * (2 + 3))",
 	}
 
 	l := lexer.New(input)
@@ -155,5 +161,4 @@ func TestInfixStatements(t *testing.T) {
 			t.Errorf("[%d] expected string %s got %s", i, expected[i], exprStatement.Expression.String())
 		}
 	}
-
 }

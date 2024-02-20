@@ -99,13 +99,15 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	fmt.Printf("PARSING exp at %s\n", p.currentToken.TokenLiteral)
 	// check for prefix
 	var left ast.Expression
 	if p.isPrefix(p.currentToken.TokenType) {
 		left = p.parsePrefixExpression()
 	} else if p.currentToken.TokenType == token.IDENTIFIER {
 		left = &ast.Identifier{Token: p.currentToken}
+	} else if p.currentToken.TokenType == token.OPEN_PAREN {
+		p.advance()
+		left = p.parseGroupedExpression()
 	} else {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}
@@ -119,8 +121,19 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		}
 		p.errors = append(p.errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
 	}
-	fmt.Printf("RETURN at %s\n", p.currentToken.TokenLiteral)
 	return left
+}
+
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	fmt.Printf("PARSING G exp at %s\n", p.currentToken.TokenLiteral)
+	ex := p.parseExpression(LOWEST)
+	p.advance()
+	if p.currentToken.TokenType != token.CLOSE_PAREN {
+		p.errors = append(p.errors, fmt.Sprintf("expected ) got %s", p.currentToken.TokenLiteral))
+		return nil
+	}
+	fmt.Printf("RETURN at %s\n", p.currentToken.TokenLiteral)
+	return ex
 }
 
 func (p *Parser) isPrefix(tokenType string) bool {
