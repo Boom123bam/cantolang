@@ -123,14 +123,14 @@ func TestPrefixStatements(t *testing.T) {
 
 func TestInfixStatements(t *testing.T) {
 	input := `
-	1-1。
-	1+2+3。
-	1+3*2/5。
-	10+x。
-	hello+world。
-	（1 + 2） + 3。
-	1 + （2 + 3）。
-	1 * （2 + 3）。
+	1-1
+	1+2+3
+	1+3*2/5
+	10+x
+	hello+world
+	（1 + 2） + 3
+	1 + （2 + 3）
+	1 * （2 + 3）
 	`
 	expected := []string{
 		"(1 - 1)",
@@ -158,7 +158,69 @@ func TestInfixStatements(t *testing.T) {
 			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
 		}
 		if exprStatement.Expression.String() != expected[i] {
-			t.Errorf("[%d] expected string %s got %s", i, expected[i], exprStatement.Expression.String())
+			t.Logf("'%v'", exprStatement.Expression.(*ast.InfixExpression).Right.(*ast.Identifier))
+			t.Errorf("[%d] expected string %s got %s.\n%+v", i, expected[i], exprStatement.Expression.String(), exprStatement.Expression)
 		}
 	}
+}
+
+func TestSingleIdentStatment(t *testing.T) {
+	input := `x`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	es, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected expressionStatement got %T", program.Statements[0])
+	}
+	if es.Expression.String() != "x" {
+		t.Errorf("expression expected x got %s", es.Expression.String())
+	}
+
+}
+
+func _TestIfStatement(t *testing.T) {
+	input := `if (amogus == 1) {2}`
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	es, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected expressionStatement got %T", program.Statements[0])
+	}
+
+	ie, ok := es.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Errorf("expected ifExpression got %T", es.Expression)
+	}
+
+	if ie.Condition.String() != "amogus == 1" {
+		t.Errorf("expected condition 'amogus == 1' got %s", ie.Condition.String())
+	}
+
+	if len(ie.Consequence.Statements) != 1 {
+		t.Errorf("expected 1 consq statement got %d", len(ie.Consequence.Statements))
+	}
+
+	cons, ok := ie.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("cons not expressionStatement got %T", ie.Consequence.Statements[0])
+	}
+
+	if cons.String() != "2" {
+		t.Errorf("cons.string() expected '2' got '%s'", cons.String())
+	}
+
 }

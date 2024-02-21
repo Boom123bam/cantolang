@@ -65,14 +65,15 @@ func (p *Parser) ParseStatement() ast.Statement {
 	for p.currentToken.TokenType == token.COMMENT {
 		p.advance()
 	}
+	var s ast.Statement
 	switch p.currentToken.TokenType {
 	case token.INITIALIZE:
-		s := p.parseInitializeStatement()
-		return s
+		s = p.parseInitializeStatement()
 	default:
-		s := p.parseExpressionStatement()
-		return s
+		s = p.parseExpressionStatement()
 	}
+	p.advance()
+	return s
 }
 
 func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
@@ -81,18 +82,16 @@ func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
 		return nil
 	}
 	statement.Identifier = p.currentToken.TokenLiteral
-	if !p.expectPeek(token.FULLSTOP) {
-		return nil
+	if p.peekToken.TokenType == token.FULLSTOP {
+		p.advance()
 	}
-	p.advance()
 	return statement
 }
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	statement := &ast.ExpressionStatement{Token: p.currentToken}
 	statement.Expression = p.parseExpression(LOWEST)
-	p.advance()
-	if p.currentToken.TokenType == token.FULLSTOP {
+	if p.peekToken.TokenType == token.FULLSTOP {
 		p.advance()
 	}
 	return statement
@@ -125,14 +124,12 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 }
 
 func (p *Parser) parseGroupedExpression() ast.Expression {
-	fmt.Printf("PARSING G exp at %s\n", p.currentToken.TokenLiteral)
 	ex := p.parseExpression(LOWEST)
 	p.advance()
 	if p.currentToken.TokenType != token.CLOSE_PAREN {
 		p.errors = append(p.errors, fmt.Sprintf("expected ) got %s", p.currentToken.TokenLiteral))
 		return nil
 	}
-	fmt.Printf("RETURN at %s\n", p.currentToken.TokenLiteral)
 	return ex
 }
 
