@@ -21,6 +21,8 @@ a 或者 b
 // if conditional
 如果 （唔係（a 係 b）） 嘅話，就「
     講（“OK”）。
+」唔係就「
+    講（“NO”）。
 」
 
 // while loop
