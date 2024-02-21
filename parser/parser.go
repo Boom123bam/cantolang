@@ -107,6 +107,8 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	} else if p.currentToken.TokenType == token.OPEN_PAREN {
 		p.advance()
 		left = p.parseGroupedExpression()
+	} else if p.currentToken.TokenType == token.IF {
+		left = p.parseIfExpression()
 	} else {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}
@@ -131,6 +133,45 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 		return nil
 	}
 	return ex
+}
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	ex := &ast.IfExpression{Token: p.currentToken}
+	if !p.expectPeek(token.OPEN_PAREN) {
+		return nil
+	}
+	p.advance()
+	ex.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.CLOSE_PAREN) {
+		return nil
+	}
+	if !p.expectPeek(token.GEWA) {
+		return nil
+	}
+	if !p.expectPeek(token.COMMA) {
+		return nil
+	}
+	if !p.expectPeek(token.THEN) {
+		return nil
+	}
+	if !p.expectPeek(token.OPEN_BRACE) {
+		return nil
+	}
+	p.advance()
+	ex.Consequence = p.parseBlockStatement()
+	return ex
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	bs := &ast.BlockStatement{}
+	for p.currentToken.TokenType != token.CLOSE_BRACE {
+		s := p.ParseStatement()
+		if s != nil {
+			bs.Statements = append(bs.Statements, s)
+		}
+	}
+	return bs
 }
 
 func (p *Parser) isPrefix(tokenType string) bool {

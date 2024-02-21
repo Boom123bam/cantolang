@@ -184,8 +184,10 @@ func TestSingleIdentStatment(t *testing.T) {
 
 }
 
-func _TestIfStatement(t *testing.T) {
-	input := `if (amogus == 1) {2}`
+func TestIfStatement(t *testing.T) {
+	input := `如果 （a） 嘅話，就「
+    2。
+」`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -206,8 +208,8 @@ func _TestIfStatement(t *testing.T) {
 		t.Errorf("expected ifExpression got %T", es.Expression)
 	}
 
-	if ie.Condition.String() != "amogus == 1" {
-		t.Errorf("expected condition 'amogus == 1' got %s", ie.Condition.String())
+	if ie.Condition.String() != "a" {
+		t.Errorf("expected condition 'a' got %s", ie.Condition.String())
 	}
 
 	if len(ie.Consequence.Statements) != 1 {
