@@ -44,7 +44,10 @@ func (l *Lexer) readIdentifier() string {
 }
 
 func isAllowedInIdent(char rune) bool {
-	restricted := []rune(" 1234567890!@#$%^&*/" +
+	if char == 0 {
+		return false
+	}
+	restricted := []rune(" \n1234567890!@#$%^&*/" +
 		token.OPEN_PAREN +
 		token.CLOSE_PAREN +
 		token.OPEN_BRACE +

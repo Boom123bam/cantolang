@@ -66,3 +66,15 @@ func TestLexer(t *testing.T) {
 
 	}
 }
+
+func TestSingleTok(t *testing.T) {
+	input := `i`
+	l := New(input)
+	tok := l.ReadToken()
+	if tok.TokenType != token.IDENTIFIER {
+		t.Errorf("expected ident got %s", tok.TokenType)
+	}
+	if tok.TokenLiteral != "i" {
+		t.Errorf("expected i got %s", tok.TokenLiteral)
+	}
+}
