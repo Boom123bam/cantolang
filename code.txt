@@ -30,3 +30,8 @@ a 或者 b
     講（i）。
     塞 i+1 入 i。
 」
+
+// define function
+聽到 add（x，y） 嘅話，就「
+    俾我 x + y;
+」
