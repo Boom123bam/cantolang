@@ -42,6 +42,9 @@ const (
 	WHILE = "WHILE"
 	SI    = "SI"
 
+	FUNCTION = "FUNCTION"
+	RETURN   = "RETURN"
+
 	IDENTIFIER = "IDENTIFIER"
 	INVALID    = "INVALID"
 	COMMENT    = "COMMENT"
@@ -67,6 +70,8 @@ var keywords = map[string]string{
 	"時":   SI,
 	"塞":   ASSIGN,
 	"入":   TO,
+	"聽到":  FUNCTION,
+	"俾我":  RETURN,
 }
 
 func LookUpIdent(keyword string) string {

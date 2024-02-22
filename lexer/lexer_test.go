@@ -121,3 +121,44 @@ func TestIfElse(t *testing.T) {
 
 	}
 }
+
+func TestFunction(t *testing.T) {
+	input := `聽到 add（a，b） 嘅話，就「
+	    俾我 a + b。
+	」`
+
+	expectedTokens := []struct {
+		Type    string
+		Literal string
+	}{
+		{token.FUNCTION, "聽到"},
+		{token.IDENTIFIER, "add"},
+		{token.OPEN_PAREN, "（"},
+		{token.IDENTIFIER, "a"},
+		{token.COMMA, "，"},
+		{token.IDENTIFIER, "b"},
+		{token.CLOSE_PAREN, "）"},
+		{token.GEWA, "嘅話"},
+		{token.COMMA, "，"},
+		{token.THEN, "就"},
+		{token.OPEN_BRACE, "「"},
+		{token.RETURN, "俾我"},
+		{token.IDENTIFIER, "a"},
+		{token.ADD, "+"},
+		{token.IDENTIFIER, "b"},
+		{token.FULLSTOP, "。"},
+		{token.CLOSE_BRACE, "」"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, exp := range expectedTokens {
+		got := l.ReadToken()
+		if got.TokenLiteral != exp.Literal {
+			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
+		}
+		if got.TokenType != exp.Type {
+			t.Errorf("tests[%d] Expected type '%s' got '%s'", i, exp.Type, got.TokenType)
+		}
+
+	}
+}
