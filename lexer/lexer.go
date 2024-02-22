@@ -47,7 +47,7 @@ func isAllowedInIdent(char rune) bool {
 	if char == 0 {
 		return false
 	}
-	restricted := []rune(" \n1234567890!@#$%^&*/" +
+	restricted := []rune(" \n1234567890!@#$%^&" +
 		token.OPEN_PAREN +
 		token.CLOSE_PAREN +
 		token.OPEN_BRACE +
@@ -57,23 +57,7 @@ func isAllowedInIdent(char rune) bool {
 		token.ADD +
 		token.MINUS +
 		token.MULTIPLY +
-		token.DIVIDE +
-		token.INCREMENT +
-		token.DECREMENT +
-		token.INITIALIZE +
-		token.ASSIGN +
-		token.TO +
-		token.EQUAL_TO +
-		token.LESS_THAN +
-		token.GREATER_THAN +
-		token.AND +
-		token.OR +
-		token.NOT +
-		token.IF +
-		token.GEWA +
-		token.THEN +
-		token.WHILE +
-		token.SI)
+		token.DIVIDE)
 	for _, c := range restricted {
 		if c == char {
 			return false
@@ -101,132 +85,65 @@ func (l *Lexer) ReadToken() token.Token {
 			TokenLiteral: "",
 		}
 	}
-	// double char tokens
 	var t token.Token
-	switch string(l.char) + string(l.peekChar) {
-	case token.INITIALIZE:
-		if string(l.char)+string(l.peekChar) == token.INITIALIZE {
-			t.TokenType = token.INITIALIZE
-			t.TokenLiteral = token.INITIALIZE
-			l.advance()
-		}
-	case token.LESS_THAN:
-		if string(l.char)+string(l.peekChar) == token.LESS_THAN {
-			t.TokenType = token.LESS_THAN
-			t.TokenLiteral = token.LESS_THAN
-			l.advance()
-		}
-	case token.GREATER_THAN:
-		if string(l.char)+string(l.peekChar) == token.GREATER_THAN {
-			t.TokenType = token.GREATER_THAN
-			t.TokenLiteral = token.GREATER_THAN
-			l.advance()
-		}
-	case token.AND:
-		if string(l.char)+string(l.peekChar) == token.AND {
-			t.TokenType = token.AND
-			t.TokenLiteral = token.AND
-			l.advance()
-		}
-	case token.OR:
-		if string(l.char)+string(l.peekChar) == token.OR {
-			t.TokenType = token.OR
-			t.TokenLiteral = token.OR
-			l.advance()
-		}
-	case token.NOT:
-		if string(l.char)+string(l.peekChar) == token.NOT {
-			t.TokenType = token.NOT
-			t.TokenLiteral = token.NOT
-			l.advance()
-		}
-	case token.IF:
-		if string(l.char)+string(l.peekChar) == token.IF {
-			t.TokenType = token.IF
-			t.TokenLiteral = token.IF
-			l.advance()
-		}
-	case token.GEWA:
-		if string(l.char)+string(l.peekChar) == token.GEWA {
-			t.TokenType = token.GEWA
-			t.TokenLiteral = token.GEWA
-			l.advance()
-		}
-	case token.INCREMENT:
-		if string(l.char)+string(l.peekChar) == token.INCREMENT {
-			t.TokenType = token.INCREMENT
-			t.TokenLiteral = token.INCREMENT
-			l.advance()
-		}
-	case token.DECREMENT:
-		if string(l.char)+string(l.peekChar) == token.DECREMENT {
-			t.TokenType = token.DECREMENT
-			t.TokenLiteral = token.DECREMENT
-			l.advance()
-		}
-	case "//":
-		for l.char != '\n' {
-			l.advance()
-		}
-		t.TokenType = token.COMMENT
-		return t
-	}
-
-	if t.TokenType != "" {
-		l.advance()
-		return t
-	}
-
 	// single char tokens
 	switch l.char {
 	case '/':
+		// check for comment
+		if l.peekChar == '/' {
+			for l.char != '\n' {
+				l.advance()
+			}
+			t.TokenType = token.COMMENT
+			return t
+		}
 		t.TokenType = token.DIVIDE
-		t.TokenLiteral = token.DIVIDE
+		t.TokenLiteral = string(l.char)
 	case '（':
 		t.TokenType = token.OPEN_PAREN
-		t.TokenLiteral = token.OPEN_PAREN
+		t.TokenLiteral = string(l.char)
 	case '）':
 		t.TokenType = token.CLOSE_PAREN
-		t.TokenLiteral = token.CLOSE_PAREN
+		t.TokenLiteral = string(l.char)
 	case '「':
 		t.TokenType = token.OPEN_BRACE
-		t.TokenLiteral = token.OPEN_BRACE
+		t.TokenLiteral = string(l.char)
 	case '」':
 		t.TokenType = token.CLOSE_BRACE
-		t.TokenLiteral = token.CLOSE_BRACE
+		t.TokenLiteral = string(l.char)
 	case '。':
 		t.TokenType = token.FULLSTOP
-		t.TokenLiteral = token.FULLSTOP
+		t.TokenLiteral = string(l.char)
 	case '，':
 		t.TokenType = token.COMMA
-		t.TokenLiteral = token.COMMA
+		t.TokenLiteral = string(l.char)
 	case '+':
 		t.TokenType = token.ADD
-		t.TokenLiteral = token.ADD
+		t.TokenLiteral = string(l.char)
 	case '-':
 		t.TokenType = token.MINUS
-		t.TokenLiteral = token.MINUS
+		t.TokenLiteral = string(l.char)
 	case '*':
 		t.TokenType = token.MULTIPLY
-		t.TokenLiteral = token.MULTIPLY
+		t.TokenLiteral = string(l.char)
 	case '塞':
 		t.TokenType = token.ASSIGN
-		t.TokenLiteral = token.ASSIGN
+		t.TokenLiteral = string(l.char)
 	case '入':
 		t.TokenType = token.TO
-		t.TokenLiteral = token.TO
+		t.TokenLiteral = string(l.char)
 	case '係':
 		t.TokenType = token.EQUAL_TO
-		t.TokenLiteral = token.EQUAL_TO
+		t.TokenLiteral = string(l.char)
 	case '就':
 		t.TokenType = token.THEN
-		t.TokenLiteral = token.THEN
+		t.TokenLiteral = string(l.char)
 	case '當':
 		t.TokenType = token.WHILE
-		t.TokenLiteral = token.WHILE
+		t.TokenLiteral = string(l.char)
 	case '時':
 		t.TokenType = token.SI
-		t.TokenLiteral = token.SI
+		t.TokenLiteral = string(l.char)
 	default:
 		if l.char >= '0' && l.char <= '9' {
 			t.TokenType = token.NUMBER
@@ -239,7 +156,7 @@ func (l *Lexer) ReadToken() token.Token {
 			t.TokenType = token.INVALID
 			t.TokenLiteral = string(l.char)
 		} else {
-			t.TokenType = token.IDENTIFIER
+			t.TokenType = token.LookUpIdent(i)
 			t.TokenLiteral = i
 			return t
 		}

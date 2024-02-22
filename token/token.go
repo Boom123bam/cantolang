@@ -17,29 +17,30 @@ const (
 	// MULTIPLY = "乘"
 	// DIVIDE = "除"
 
-	INCREMENT = "大D"
-	DECREMENT = "細D"
+	INCREMENT = "INCREMENT"
+	DECREMENT = "DECREMENT"
 
-	INITIALIZE = "叫佢"
+	INITIALIZE = "INITIALIZE"
 
-	ASSIGN = "塞"
-	TO     = "入"
+	ASSIGN = "ASSIGN"
+	TO     = "TO"
 
-	EQUAL_TO     = "係"
-	LESS_THAN    = "細過"
-	GREATER_THAN = "大過"
+	EQUAL_TO     = "EQUAL_TO"
+	LESS_THAN    = "LESS_THAN"
+	GREATER_THAN = "GREATER_THAN"
 
-	AND = "同埋"
-	OR  = "或者"
-	NOT = "唔係"
+	AND = "AND"
+	OR  = "OR"
+	NOT = "NOT"
 
-	IF   = "如果"
-	GEWA = "嘅話"
+	IF   = "IF"
+	ELSE = "ELSE"
+	GEWA = "GEWA"
 
-	THEN = "就"
+	THEN = "THEN"
 
-	WHILE = "當"
-	SI    = "時"
+	WHILE = "WHILE"
+	SI    = "SI"
 
 	IDENTIFIER = "IDENTIFIER"
 	INVALID    = "INVALID"
@@ -47,6 +48,34 @@ const (
 	NUMBER     = "NUMBER"
 	EOF        = "EOF"
 )
+
+var keywords = map[string]string{
+	"係":   EQUAL_TO,
+	"細過":  LESS_THAN,
+	"大過":  GREATER_THAN,
+	"同埋":  AND,
+	"或者":  OR,
+	"唔係":  NOT,
+	"如果":  IF,
+	"唔係就": ELSE,
+	"嘅話":  GEWA,
+	"大D":  INCREMENT,
+	"細D":  DECREMENT,
+	"叫佢":  INITIALIZE,
+	"就":   THEN,
+	"當":   WHILE,
+	"時":   SI,
+	"塞":   ASSIGN,
+	"入":   TO,
+}
+
+func LookUpIdent(keyword string) string {
+	ident, ok := keywords[keyword]
+	if !ok {
+		return IDENTIFIER
+	}
+	return ident
+}
 
 type Token struct {
 	TokenType    string

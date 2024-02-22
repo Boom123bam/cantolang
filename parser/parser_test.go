@@ -226,3 +226,62 @@ func TestIfStatement(t *testing.T) {
 	}
 
 }
+
+func _TestIfElseStatement(t *testing.T) {
+	input := `如果 （a） 嘅話，就「
+	    2。
+	」唔係就「
+	    3。
+	」
+`
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	es, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected expressionStatement got %T", program.Statements[0])
+	}
+
+	ie, ok := es.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Errorf("expected ifExpression got %T", es.Expression)
+	}
+
+	if ie.Condition.String() != "a" {
+		t.Errorf("expected condition 'a' got %s", ie.Condition.String())
+	}
+
+	if len(ie.Consequence.Statements) != 1 {
+		t.Errorf("expected 1 consq statement got %d", len(ie.Consequence.Statements))
+	}
+
+	cons, ok := ie.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("cons not expressionStatement got %T", ie.Consequence.Statements[0])
+	}
+
+	if cons.String() != "2" {
+		t.Errorf("cons.string() expected '2' got '%s'", cons.String())
+	}
+
+	if len(ie.Alternative.Statements) != 1 {
+		t.Errorf("expected 1 alt statement got %d", len(ie.Alternative.Statements))
+	}
+
+	alt, ok := ie.Alternative.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("alt not expressionStatement got %T", ie.Alternative.Statements[0])
+	}
+
+	if alt.String() != "2" {
+		t.Errorf("alt.string() expected '2' got '%s'", alt.String())
+	}
+
+}
