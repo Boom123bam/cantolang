@@ -24,6 +24,11 @@ type InitializeStatement struct {
 	Identifier string
 }
 
+type ReturnStatement struct {
+	Token      token.Token // token.return
+	Expression Expression
+}
+
 type ExpressionStatement struct {
 	Token      token.Token // first token of ExpressionStatement
 	Expression Expression
@@ -113,6 +118,10 @@ func (bs *BlockStatement) String() string {
 
 func (is *InitializeStatement) String() string {
 	return is.Token.TokenLiteral + is.Identifier
+}
+
+func (rs *ReturnStatement) String() string {
+	return rs.Token.TokenLiteral + rs.Expression.String()
 }
 
 func (es *ExpressionStatement) String() string {

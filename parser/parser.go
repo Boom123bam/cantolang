@@ -69,6 +69,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 	switch p.currentToken.TokenType {
 	case token.INITIALIZE:
 		s = p.parseInitializeStatement()
+	case token.RETURN:
+		s = p.parseReturnStatement()
 	default:
 		s = p.parseExpressionStatement()
 	}
@@ -82,6 +84,16 @@ func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
 		return nil
 	}
 	statement.Identifier = p.currentToken.TokenLiteral
+	if p.peekToken.TokenType == token.FULLSTOP {
+		p.advance()
+	}
+	return statement
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	statement := &ast.ReturnStatement{Token: p.currentToken}
+	p.advance()
+	statement.Expression = p.parseExpression(LOWEST)
 	if p.peekToken.TokenType == token.FULLSTOP {
 		p.advance()
 	}

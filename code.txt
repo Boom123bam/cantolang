@@ -33,5 +33,5 @@ a 或者 b
 
 // define function
 聽到 add（x，y） 嘅話，就「
-    俾我 x + y;
+    俾我 x + y。
 」
