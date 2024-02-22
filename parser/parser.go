@@ -71,6 +71,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		s = p.parseInitializeStatement()
 	case token.RETURN:
 		s = p.parseReturnStatement()
+	case token.FUNCTION:
+		s = p.parseFunctionDefStatement()
 	default:
 		s = p.parseExpressionStatement()
 	}
@@ -98,6 +100,48 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 		p.advance()
 	}
 	return statement
+}
+
+func (p *Parser) parseFunctionDefStatement() *ast.FunctionDefStatment {
+	statement := &ast.FunctionDefStatment{Token: p.currentToken}
+	if !p.expectPeek(token.IDENTIFIER) {
+		return nil
+	}
+	statement.Identifier = p.currentToken.TokenLiteral
+	if !p.expectPeek(token.OPEN_PAREN) {
+		return nil
+	}
+	statement.Parameters = p.parseParams()
+	if !p.expectPeek(token.GEWA) {
+		return nil
+	}
+	if !p.expectPeek(token.COMMA) {
+		return nil
+	}
+	if !p.expectPeek(token.THEN) {
+		return nil
+	}
+	if !p.expectPeek(token.OPEN_BRACE) {
+		return nil
+	}
+	p.advance()
+	statement.Body = p.parseBlockStatement()
+	return statement
+
+}
+
+func (p *Parser) parseParams() []ast.Identifier {
+	params := []ast.Identifier{}
+	for p.peekToken.TokenType == token.IDENTIFIER {
+		p.advance()
+		i := ast.Identifier{Token: p.currentToken}
+		params = append(params, i)
+		p.advance()
+	}
+	if p.currentToken.TokenType != token.CLOSE_PAREN {
+		return nil
+	}
+	return params
 }
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {

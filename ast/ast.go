@@ -38,6 +38,13 @@ type IntegerLiteral struct {
 	Token token.Token
 }
 
+type FunctionDefStatment struct {
+	Token      token.Token // token.initialize
+	Identifier string
+	Parameters []Identifier
+	Body       *BlockStatement
+}
+
 type Identifier struct {
 	Token token.Token
 }
@@ -69,6 +76,26 @@ func (il *IntegerLiteral) token() *token.Token {
 }
 func (il *IntegerLiteral) String() string {
 	return il.Token.TokenLiteral
+}
+
+func (fd *FunctionDefStatment) token() *token.Token {
+	return &fd.Token
+}
+func (fd *FunctionDefStatment) String() string {
+	buff := bytes.Buffer{}
+	buff.WriteString(fd.token().TokenLiteral + " ")
+	buff.WriteString(fd.Identifier + "(")
+	for i, param := range fd.Parameters {
+		if i != 0 {
+			buff.WriteString(",")
+		}
+		buff.WriteString(param.String())
+	}
+	buff.WriteString(") {")
+	buff.WriteString(fd.Body.String())
+	buff.WriteString("}")
+
+	return buff.String()
 }
 
 func (i *Identifier) token() *token.Token {

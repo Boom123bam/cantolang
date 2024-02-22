@@ -307,3 +307,27 @@ func TestReturnStatement(t *testing.T) {
 		t.Errorf("expected expression (1 + 2) got %s", rs.Expression.String())
 	}
 }
+
+func TestFunctionDef(t *testing.T) {
+	input := `聽到 add（x，y） 嘅話，就「
+	    俾我 x + y。
+	」`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	fd, ok := program.Statements[0].(*ast.FunctionDefStatment)
+	if !ok {
+		t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
+	}
+
+	if fd.String() != "聽到 add(x,y) {俾我(x + y)}" {
+		t.Errorf("expected 聽到 add(x,y) {俾我(x + y)} got %s", fd.String())
+	}
+
+}
