@@ -78,3 +78,46 @@ func TestSingleTok(t *testing.T) {
 		t.Errorf("expected i got %s", tok.TokenLiteral)
 	}
 }
+
+func TestIfElse(t *testing.T) {
+	input := `如果 （a） 嘅話，就「
+	    2。
+	」唔係就「
+	    3。
+	」
+`
+
+	expectedTokens := []struct {
+		Type    string
+		Literal string
+	}{
+		{token.IF, "如果"},
+		{token.OPEN_PAREN, "（"},
+		{token.IDENTIFIER, "a"},
+		{token.CLOSE_PAREN, "）"},
+		{token.GEWA, "嘅話"},
+		{token.COMMA, "，"},
+		{token.THEN, "就"},
+		{token.OPEN_BRACE, "「"},
+		{token.NUMBER, "2"},
+		{token.FULLSTOP, "。"},
+		{token.CLOSE_BRACE, "」"},
+		{token.ELSE, "唔係就"},
+		{token.OPEN_BRACE, "「"},
+		{token.NUMBER, "3"},
+		{token.FULLSTOP, "。"},
+		{token.CLOSE_BRACE, "」"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, exp := range expectedTokens {
+		got := l.ReadToken()
+		if got.TokenLiteral != exp.Literal {
+			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
+		}
+		if got.TokenType != exp.Type {
+			t.Errorf("tests[%d] Expected type '%s' got '%s'", i, exp.Type, got.TokenType)
+		}
+
+	}
+}

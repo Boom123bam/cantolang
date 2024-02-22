@@ -160,6 +160,15 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 	p.advance()
 	ex.Consequence = p.parseBlockStatement()
+
+	if p.peekToken.TokenType == token.ELSE {
+		p.advance()
+		if !p.expectPeek(token.OPEN_BRACE) {
+			return nil
+		}
+		p.advance()
+		ex.Alternative = p.parseBlockStatement()
+	}
 	return ex
 }
 

@@ -227,7 +227,7 @@ func TestIfStatement(t *testing.T) {
 
 }
 
-func _TestIfElseStatement(t *testing.T) {
+func TestIfElseStatement(t *testing.T) {
 	input := `如果 （a） 嘅話，就「
 	    2。
 	」唔係就「
@@ -280,8 +280,8 @@ func _TestIfElseStatement(t *testing.T) {
 		t.Errorf("alt not expressionStatement got %T", ie.Alternative.Statements[0])
 	}
 
-	if alt.String() != "2" {
-		t.Errorf("alt.string() expected '2' got '%s'", alt.String())
+	if alt.String() != "3" {
+		t.Errorf("alt.string() expected '3' got '%s'", alt.String())
 	}
 
 }
