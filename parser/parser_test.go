@@ -13,7 +13,7 @@ func checkParserErrors(p *Parser, t *testing.T) {
 	}
 }
 
-func _TestInitializationStatements(t *testing.T) {
+func TestInitializationStatements(t *testing.T) {
 	input := `
 	叫佢 a。
 	叫佢 o_k。
@@ -44,7 +44,7 @@ func _TestInitializationStatements(t *testing.T) {
 	}
 }
 
-func _TestIntegerStatements(t *testing.T) {
+func TestIntegerStatements(t *testing.T) {
 	input := `
 	2。
 	1。
@@ -74,7 +74,7 @@ func _TestIntegerStatements(t *testing.T) {
 	}
 }
 
-func _TestPrefixStatements(t *testing.T) {
+func TestPrefixStatements(t *testing.T) {
 	input := `
 	-2。
 	-1。
@@ -121,16 +121,16 @@ func _TestPrefixStatements(t *testing.T) {
 	}
 }
 
-func _TestInfixStatements(t *testing.T) {
+func TestInfixStatements(t *testing.T) {
 	input := `
-	1-1
-	1+2+3
-	1+3*2/5
-	10+x
-	hello+world
-	（1 + 2） + 3
-	1 + （2 + 3）
-	1 * （2 + 3）
+	1-1。
+	1+2+3。
+	1+3*2/5。
+	10+x。
+	hello+world。
+	（1 + 2） + 3。
+	1 + （2 + 3）。
+	1 * （2 + 3）。
 	`
 	expected := []string{
 		"(1 - 1)",
@@ -164,7 +164,7 @@ func _TestInfixStatements(t *testing.T) {
 	}
 }
 
-func _TestSingleIdentStatment(t *testing.T) {
+func TestSingleIdentStatment(t *testing.T) {
 	input := `x`
 	l := lexer.New(input)
 	p := New(l)
@@ -184,7 +184,7 @@ func _TestSingleIdentStatment(t *testing.T) {
 
 }
 
-func _TestIfStatement(t *testing.T) {
+func TestIfStatement(t *testing.T) {
 	input := `如果 （a） 嘅話，就「
     2。
 」`
@@ -227,7 +227,7 @@ func _TestIfStatement(t *testing.T) {
 
 }
 
-func _TestIfElseStatement(t *testing.T) {
+func TestIfElseStatement(t *testing.T) {
 	input := `如果 （a） 嘅話，就「
 	    2。
 	」唔係就「
@@ -328,6 +328,32 @@ func TestFunctionDef(t *testing.T) {
 
 	if fd.String() != "聽到 add(x,y) {俾我(x + y)}" {
 		t.Errorf("expected 聽到 add(x,y) {俾我(x + y)} got %s", fd.String())
+	}
+
+}
+
+func TestFunctionCall(t *testing.T) {
+	input := `add（x，y）`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	es, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
+	}
+
+	fce, ok := es.Expression.(*ast.FunctionCallExpression)
+	if !ok {
+		t.Errorf("expected FunctionCallExpression got %T", es.Expression)
+	}
+	if fce.Identifier.String() != "add" {
+		t.Errorf("expected add got %s", fce.Identifier.String())
 	}
 
 }

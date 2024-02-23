@@ -1,11 +1,10 @@
 # todo
 
-- parse func call
-
-
 - make normal brackets, colon, etc compatible
 
 # done
+
+- parse func call
 - parse func def
 - parse return
 - function , return token

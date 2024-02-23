@@ -26,6 +26,7 @@ var precedences = map[string]int{
 	token.MINUS:        SUM,
 	token.MULTIPLY:     PRODUCT,
 	token.DIVIDE:       PRODUCT,
+	token.OPEN_PAREN:   CALL,
 }
 
 type Parser struct {
@@ -144,6 +145,25 @@ func (p *Parser) parseParams() []ast.Identifier {
 	return params
 }
 
+func (p *Parser) parseCallParams() []ast.Expression {
+	params := []ast.Expression{}
+	if p.peekToken.TokenType == token.CLOSE_PAREN {
+		return params
+	}
+	p.advance()
+	params = append(params, p.parseExpression(LOWEST))
+	for p.peekToken.TokenType == token.COMMA {
+		p.advance()
+		p.advance()
+		params = append(params, p.parseExpression(LOWEST))
+	}
+	p.advance()
+	if p.currentToken.TokenType != token.CLOSE_PAREN {
+		return nil
+	}
+	return params
+}
+
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	statement := &ast.ExpressionStatement{Token: p.currentToken}
 	statement.Expression = p.parseExpression(LOWEST)
@@ -170,10 +190,15 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 
 	for p.peekToken.TokenType != token.FULLSTOP && precedence < precedences[p.peekToken.TokenType] {
+		println("CALLL", p.currentToken.TokenType)
 		p.advance()
 		// check for infix
 		if p.isInfix(p.currentToken.TokenType) {
 			left = p.parseInfixExpression(left)
+			continue
+		}
+		if p.currentToken.TokenType == token.OPEN_PAREN {
+			left = p.parseFunctionCall(left)
 			continue
 		}
 		p.errors = append(p.errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
@@ -226,6 +251,16 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		ex.Alternative = p.parseBlockStatement()
 	}
 	return ex
+}
+
+func (p *Parser) parseFunctionCall(left ast.Expression) ast.Expression {
+	id, ok := left.(*ast.Identifier)
+	if !ok {
+		p.errors = append(p.errors, fmt.Sprintf("expected identifier got %T", left))
+	}
+	fce := &ast.FunctionCallExpression{Identifier: id}
+	fce.Parameters = p.parseCallParams()
+	return fce
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {

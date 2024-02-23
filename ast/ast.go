@@ -49,6 +49,11 @@ type Identifier struct {
 	Token token.Token
 }
 
+type FunctionCallExpression struct {
+	Identifier *Identifier
+	Parameters []Expression
+}
+
 type PrefixExpression struct {
 	PrefixToken token.Token
 	Right       Expression
@@ -103,6 +108,21 @@ func (i *Identifier) token() *token.Token {
 }
 func (i *Identifier) String() string {
 	return i.Token.TokenLiteral
+}
+
+func (fe *FunctionCallExpression) token() *token.Token {
+	return &fe.Identifier.Token
+}
+func (fe *FunctionCallExpression) String() string {
+	buff := bytes.Buffer{}
+	buff.WriteString(fe.token().TokenLiteral + "(")
+	for i, param := range fe.Parameters {
+		if i != 0 {
+			buff.WriteString(", ")
+		}
+		buff.WriteString(param.String())
+	}
+	return buff.String()
 }
 
 func (pe *PrefixExpression) token() *token.Token {
