@@ -1,21 +1,17 @@
 package token
 
 const (
-	OPEN_PAREN  = "（"
-	CLOSE_PAREN = "）"
-	OPEN_BRACE  = "「"
-	CLOSE_BRACE = "」"
-	FULLSTOP    = "。"
-	COMMA       = "，"
+	OPEN_PAREN  = "OPEN_PAREN"
+	CLOSE_PAREN = "CLOSE_PAREN"
+	OPEN_BRACE  = "OPEN_BRACE"
+	CLOSE_BRACE = "CLOSE_BRACE"
+	EOL         = "EOL"
+	COMMA       = "COMMA"
 
-	ADD      = "+"
-	MINUS    = "-"
-	MULTIPLY = "*"
-	DIVIDE   = "/"
-	// ADD = "加"
-	// MINUS = "減"
-	// MULTIPLY = "乘"
-	// DIVIDE = "除"
+	ADD      = "ADD"
+	MINUS    = "MINUS"
+	MULTIPLY = "MULTIPLY"
+	DIVIDE   = "DIVIDE"
 
 	INCREMENT = "INCREMENT"
 	DECREMENT = "DECREMENT"
@@ -45,12 +41,39 @@ const (
 	FUNCTION = "FUNCTION"
 	RETURN   = "RETURN"
 
-	IDENTIFIER = "IDENTIFIER"
-	INVALID    = "INVALID"
-	COMMENT    = "COMMENT"
-	NUMBER     = "NUMBER"
-	EOF        = "EOF"
+	IDENTIFIER      = "IDENTIFIER"
+	INVALID         = "INVALID"
+	COMMENT         = "COMMENT"
+	NUMBER          = "NUMBER"
+	EOF             = "EOF"
+	TEMP_NOT_SYMBOL = "TEMP_NOT_SYMBOL"
 )
+
+var symbols = map[rune]string{
+	'（': OPEN_PAREN,
+	'）': CLOSE_PAREN,
+	'「': OPEN_BRACE,
+	'」': CLOSE_BRACE,
+	'。': EOL,
+	'，': COMMA,
+
+	'(': OPEN_PAREN,
+	')': CLOSE_PAREN,
+	'{': OPEN_BRACE,
+	'}': CLOSE_BRACE,
+	';': EOL,
+	',': COMMA,
+
+	'加': ADD,
+	'減': MINUS,
+	'乘': MULTIPLY,
+	'除': DIVIDE,
+
+	'+': ADD,
+	'-': MINUS,
+	'*': MULTIPLY,
+	'/': DIVIDE,
+}
 
 var keywords = map[string]string{
 	"係":   EQUAL_TO,
@@ -72,6 +95,14 @@ var keywords = map[string]string{
 	"入":   TO,
 	"聽到":  FUNCTION,
 	"俾我":  RETURN,
+}
+
+func LookUpSymbol(symbol rune) string {
+	ident, ok := symbols[symbol]
+	if !ok {
+		return TEMP_NOT_SYMBOL
+	}
+	return ident
 }
 
 func LookUpIdent(keyword string) string {

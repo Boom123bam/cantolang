@@ -12,7 +12,7 @@ func TestLexer(t *testing.T) {
 
     當 （i 細過 8） 時，就「
         講（i）。
-        塞 i + 1 入 i。
+        塞 i 加 1 入 i。
     」
 
     a 大D。
@@ -25,7 +25,7 @@ func TestLexer(t *testing.T) {
 		{token.COMMENT, ""},
 		{token.INITIALIZE, "叫佢"},
 		{token.IDENTIFIER, "i"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.WHILE, "當"},
 		{token.OPEN_PAREN, "（"},
 		{token.IDENTIFIER, "i"},
@@ -40,18 +40,18 @@ func TestLexer(t *testing.T) {
 		{token.OPEN_PAREN, "（"},
 		{token.IDENTIFIER, "i"},
 		{token.CLOSE_PAREN, "）"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.ASSIGN, "塞"},
 		{token.IDENTIFIER, "i"},
-		{token.ADD, "+"},
+		{token.ADD, "加"},
 		{token.NUMBER, "1"},
 		{token.TO, "入"},
 		{token.IDENTIFIER, "i"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.CLOSE_BRACE, "」"},
 		{token.IDENTIFIER, "a"},
 		{token.INCREMENT, "大D"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -100,12 +100,12 @@ func TestIfElse(t *testing.T) {
 		{token.THEN, "就"},
 		{token.OPEN_BRACE, "「"},
 		{token.NUMBER, "2"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.CLOSE_BRACE, "」"},
 		{token.ELSE, "唔係就"},
 		{token.OPEN_BRACE, "「"},
 		{token.NUMBER, "3"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.CLOSE_BRACE, "」"},
 		{token.EOF, ""},
 	}
@@ -124,7 +124,7 @@ func TestIfElse(t *testing.T) {
 
 func TestFunction(t *testing.T) {
 	input := `聽到 add（a，b） 嘅話，就「
-	    俾我 a + b。
+	    俾我 a 加 b。
 	」`
 
 	expectedTokens := []struct {
@@ -144,10 +144,42 @@ func TestFunction(t *testing.T) {
 		{token.OPEN_BRACE, "「"},
 		{token.RETURN, "俾我"},
 		{token.IDENTIFIER, "a"},
-		{token.ADD, "+"},
+		{token.ADD, "加"},
 		{token.IDENTIFIER, "b"},
-		{token.FULLSTOP, "。"},
+		{token.EOL, "。"},
 		{token.CLOSE_BRACE, "」"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, exp := range expectedTokens {
+		got := l.ReadToken()
+		if got.TokenLiteral != exp.Literal {
+			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
+		}
+		if got.TokenType != exp.Type {
+			t.Errorf("tests[%d] Expected type '%s' got '%s'", i, exp.Type, got.TokenType)
+		}
+
+	}
+}
+
+func TestRegularSymbols(t *testing.T) {
+	input := `(){},;+-*/`
+
+	expectedTokens := []struct {
+		Type    string
+		Literal string
+	}{
+		{token.OPEN_PAREN, "("},
+		{token.CLOSE_PAREN, ")"},
+		{token.OPEN_BRACE, "{"},
+		{token.CLOSE_BRACE, "}"},
+		{token.COMMA, ","},
+		{token.EOL, ";"},
+		{token.ADD, "+"},
+		{token.MINUS, "-"},
+		{token.MULTIPLY, "*"},
+		{token.DIVIDE, "/"},
 		{token.EOF, ""},
 	}
 	l := New(input)

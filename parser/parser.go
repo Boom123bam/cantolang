@@ -87,7 +87,7 @@ func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
 		return nil
 	}
 	statement.Identifier = p.currentToken.TokenLiteral
-	if p.peekToken.TokenType == token.FULLSTOP {
+	if p.peekToken.TokenType == token.EOL {
 		p.advance()
 	}
 	return statement
@@ -97,7 +97,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	statement := &ast.ReturnStatement{Token: p.currentToken}
 	p.advance()
 	statement.Expression = p.parseExpression(LOWEST)
-	if p.peekToken.TokenType == token.FULLSTOP {
+	if p.peekToken.TokenType == token.EOL {
 		p.advance()
 	}
 	return statement
@@ -167,7 +167,7 @@ func (p *Parser) parseCallParams() []ast.Expression {
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	statement := &ast.ExpressionStatement{Token: p.currentToken}
 	statement.Expression = p.parseExpression(LOWEST)
-	if p.peekToken.TokenType == token.FULLSTOP {
+	if p.peekToken.TokenType == token.EOL {
 		p.advance()
 	}
 	return statement
@@ -189,7 +189,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		left = &ast.IntegerLiteral{Token: p.currentToken}
 	}
 
-	for p.peekToken.TokenType != token.FULLSTOP && precedence < precedences[p.peekToken.TokenType] {
+	for p.peekToken.TokenType != token.EOL && precedence < precedences[p.peekToken.TokenType] {
 		println("CALLL", p.currentToken.TokenType)
 		p.advance()
 		// check for infix

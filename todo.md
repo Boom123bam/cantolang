@@ -1,9 +1,11 @@
 # todo
 
-- make normal brackets, colon, etc compatible
+- make evaluator
+- repl
 
 # done
 
+- make normal brackets, colon, etc compatible
 - parse func call
 - parse func def
 - parse return

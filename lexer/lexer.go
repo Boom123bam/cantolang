@@ -47,23 +47,17 @@ func isAllowedInIdent(char rune) bool {
 	if char == 0 {
 		return false
 	}
-	restricted := []rune(" \n1234567890!@#$%^&" +
-		token.OPEN_PAREN +
-		token.CLOSE_PAREN +
-		token.OPEN_BRACE +
-		token.CLOSE_BRACE +
-		token.FULLSTOP +
-		token.COMMA +
-		token.ADD +
-		token.MINUS +
-		token.MULTIPLY +
-		token.DIVIDE)
+	// TODO use token.LookUpSymbol
+	restricted := []rune(" \n1234567890!@#$%^&")
 	for _, c := range restricted {
 		if c == char {
 			return false
 		}
 	}
-	return true
+	if token.LookUpSymbol(char) == token.TEMP_NOT_SYMBOL {
+		return true
+	}
+	return false
 }
 
 func (l *Lexer) readNumber() string {
@@ -86,81 +80,40 @@ func (l *Lexer) ReadToken() token.Token {
 		}
 	}
 	var t token.Token
-	// single char tokens
-	switch l.char {
-	case '/':
-		// check for comment
-		if l.peekChar == '/' {
-			for l.char != '\n' {
-				l.advance()
-			}
-			t.TokenType = token.COMMENT
-			return t
-		}
-		t.TokenType = token.DIVIDE
-		t.TokenLiteral = string(l.char)
-	case '（':
-		t.TokenType = token.OPEN_PAREN
-		t.TokenLiteral = string(l.char)
-	case '）':
-		t.TokenType = token.CLOSE_PAREN
-		t.TokenLiteral = string(l.char)
-	case '「':
-		t.TokenType = token.OPEN_BRACE
-		t.TokenLiteral = string(l.char)
-	case '」':
-		t.TokenType = token.CLOSE_BRACE
-		t.TokenLiteral = string(l.char)
-	case '。':
-		t.TokenType = token.FULLSTOP
-		t.TokenLiteral = string(l.char)
-	case '，':
-		t.TokenType = token.COMMA
-		t.TokenLiteral = string(l.char)
-	case '+':
-		t.TokenType = token.ADD
-		t.TokenLiteral = string(l.char)
-	case '-':
-		t.TokenType = token.MINUS
-		t.TokenLiteral = string(l.char)
-	case '*':
-		t.TokenType = token.MULTIPLY
-		t.TokenLiteral = string(l.char)
-	case '塞':
-		t.TokenType = token.ASSIGN
-		t.TokenLiteral = string(l.char)
-	case '入':
-		t.TokenType = token.TO
-		t.TokenLiteral = string(l.char)
-	case '係':
-		t.TokenType = token.EQUAL_TO
-		t.TokenLiteral = string(l.char)
-	case '就':
-		t.TokenType = token.THEN
-		t.TokenLiteral = string(l.char)
-	case '當':
-		t.TokenType = token.WHILE
-		t.TokenLiteral = string(l.char)
-	case '時':
-		t.TokenType = token.SI
-		t.TokenLiteral = string(l.char)
-	default:
-		if l.char >= '0' && l.char <= '9' {
-			t.TokenType = token.NUMBER
-			t.TokenLiteral = l.readNumber()
-			return t
-		}
 
-		i := l.readIdentifier()
-		if i == "" {
-			t.TokenType = token.INVALID
-			t.TokenLiteral = string(l.char)
-		} else {
-			t.TokenType = token.LookUpIdent(i)
-			t.TokenLiteral = i
-			return t
+	if l.char == '/' && l.peekChar == '/' {
+		for l.char != '\n' {
+			l.advance()
 		}
+		t.TokenType = token.COMMENT
+		return t
 	}
+	// check for symbol
+	symbol := token.LookUpSymbol(l.char)
+	if symbol != token.TEMP_NOT_SYMBOL {
+		t.TokenType = token.LookUpSymbol(l.char)
+		t.TokenLiteral = string(l.char)
+		l.advance()
+		return t
+	}
+	// check for number
+	if l.char >= '0' && l.char <= '9' {
+		t.TokenType = token.NUMBER
+		t.TokenLiteral = l.readNumber()
+		return t
+	}
+
+	// identifier
+	i := l.readIdentifier()
+	if i == "" {
+		t.TokenType = token.INVALID
+		t.TokenLiteral = string(l.char)
+	} else {
+		t.TokenType = token.LookUpIdent(i)
+		t.TokenLiteral = i
+		return t
+	}
+
 	l.advance()
 	return t
 }
