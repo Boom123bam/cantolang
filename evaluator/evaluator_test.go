@@ -17,8 +17,12 @@ func TestInteger(t *testing.T) {
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
-		if output != test.expected {
-			t.Errorf("expected %d got %+v (type %T)", test.expected, output, output)
+		intObj, ok := output.(object.Integer)
+		if !ok {
+			t.Errorf("Expected object.Integer got %T", output)
+		}
+		if intObj.Value != test.expected {
+			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
 		}
 	}
 }

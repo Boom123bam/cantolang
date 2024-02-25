@@ -28,6 +28,8 @@ func EvalProgram(program *ast.Program) object.Object {
 
 func EvalExpression(expression ast.Expression) object.Object {
 	switch expression := expression.(type) {
+	case *ast.IntegerLiteral:
+		return object.Integer{Value: expression.Value}
 	default:
 		return object.NULL
 	}
