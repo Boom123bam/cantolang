@@ -5,6 +5,10 @@ import (
 	"cantolang/token"
 )
 
+type Node interface {
+	String() string
+}
+
 type Program struct {
 	Statements []Statement
 }
@@ -74,6 +78,14 @@ type IfExpression struct {
 
 type BlockStatement struct {
 	Statements []Statement
+}
+
+func (p *Program) String() string {
+	buff := bytes.Buffer{}
+	for _, s := range p.Statements {
+		buff.WriteString(s.String())
+	}
+	return buff.String()
 }
 
 func (il *IntegerLiteral) token() *token.Token {
