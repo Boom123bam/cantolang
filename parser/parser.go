@@ -5,6 +5,7 @@ import (
 	"cantolang/lexer"
 	"cantolang/token"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -186,7 +187,11 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	} else if p.currentToken.TokenType == token.IF {
 		left = p.parseIfExpression()
 	} else {
-		left = &ast.IntegerLiteral{Token: p.currentToken}
+		val, err := strconv.Atoi(p.currentToken.TokenLiteral)
+		if err != nil {
+			p.errors = append(p.errors, err.Error())
+		}
+		left = &ast.IntegerLiteral{Token: p.currentToken, Value: val}
 	}
 
 	for p.peekToken.TokenType != token.EOL && precedence < precedences[p.peekToken.TokenType] {

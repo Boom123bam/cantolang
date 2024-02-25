@@ -40,6 +40,7 @@ type ExpressionStatement struct {
 
 type IntegerLiteral struct {
 	Token token.Token
+	Value int
 }
 
 type FunctionDefStatment struct {

@@ -82,11 +82,11 @@ func TestPrefixStatements(t *testing.T) {
 	`
 	expected := []struct {
 		prefix string
-		right  string
+		right  int
 	}{
-		{"-", "2"},
-		{"-", "1"},
-		{"唔係", "5"},
+		{"-", 2},
+		{"-", 1},
+		{"唔係", 5},
 	}
 
 	l := lexer.New(input)
@@ -115,8 +115,8 @@ func TestPrefixStatements(t *testing.T) {
 		if prefixExp.PrefixToken.TokenLiteral != expected[i].prefix {
 			t.Errorf("[%d] expected prefix '%s' got %s", i, expected[i].prefix, prefixExp.PrefixToken.TokenLiteral)
 		}
-		if right.Token.TokenLiteral != expected[i].right {
-			t.Errorf("[%d] expected token literal '%s' got %s", i, expected[i], exprStatement.Token.TokenLiteral)
+		if right.Value != expected[i].right {
+			t.Errorf("[%d] expected value '%d' got %d", i, expected[i].right, right.Value)
 		}
 	}
 }
