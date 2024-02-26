@@ -1,7 +1,6 @@
 # todo
 
 - repl
-- evaluate bool
 - evaluate prefix
 - evaluate infix
 - eval if else
@@ -9,6 +8,7 @@
 
 # done
 
+- evaluate bool
 - evaluate int
 - make evaluator
 - make normal brackets, colon, etc compatible

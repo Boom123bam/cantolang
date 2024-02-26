@@ -30,6 +30,11 @@ func EvalExpression(expression ast.Expression) object.Object {
 	switch expression := expression.(type) {
 	case *ast.IntegerLiteral:
 		return object.Integer{Value: expression.Value}
+	case *ast.Boolean:
+		if expression.Value {
+			return object.TRUE
+		}
+		return object.FALSE
 	default:
 		return object.NULL
 	}

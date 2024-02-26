@@ -32,8 +32,8 @@ func TestBool(t *testing.T) {
 		input    string
 		expected bool
 	}{
-		{"true", true},
-		{"false", false},
+		{"啱", true},
+		{"錯", false},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
