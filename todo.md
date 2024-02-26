@@ -1,13 +1,13 @@
 # todo
 
-- repl
-- evaluate prefix
 - evaluate infix
 - eval if else
 - eval let
 
 # done
 
+- evaluate prefix
+- repl
 - evaluate bool
 - evaluate int
 - make evaluator

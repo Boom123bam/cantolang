@@ -3,6 +3,7 @@ package evaluator
 import (
 	"cantolang/ast"
 	"cantolang/object"
+	"cantolang/token"
 )
 
 func Eval(node ast.Node) object.Object {
@@ -31,11 +32,37 @@ func EvalExpression(expression ast.Expression) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: expression.Value}
 	case *ast.Boolean:
-		if expression.Value {
-			return object.TRUE
-		}
-		return object.FALSE
+		return getBoolObj(expression.Value)
+	case *ast.PrefixExpression:
+		right := Eval(expression.Right)
+		return evalPrefixExpression(expression.PrefixToken.TokenType, right)
 	default:
 		return object.NULL
 	}
+}
+
+func evalPrefixExpression(tokenType string, right object.Object) object.Object {
+	switch tokenType {
+	case token.MINUS:
+		rightInt, ok := right.(*object.Integer)
+		if !ok {
+			return object.NULL
+		}
+		return &object.Integer{Value: -rightInt.Value}
+	case token.NOT:
+		rightBool, ok := right.(*object.Boolean)
+		if !ok {
+			return object.NULL
+		}
+		return getBoolObj(!rightBool.Value)
+	default:
+		return object.NULL
+	}
+}
+
+func getBoolObj(b bool) *object.Boolean {
+	if b {
+		return object.TRUE
+	}
+	return object.FALSE
 }

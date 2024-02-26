@@ -14,6 +14,8 @@ func TestInteger(t *testing.T) {
 	}{
 		{"1", 1},
 		{"5", 5},
+		{"-1", -1},
+		{"-5", -5},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -34,6 +36,8 @@ func TestBool(t *testing.T) {
 	}{
 		{"啱", true},
 		{"錯", false},
+		{"唔係 啱", false},
+		{"唔係 錯", true},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
