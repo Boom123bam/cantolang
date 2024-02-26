@@ -8,6 +8,9 @@ const (
 	EOL         = "EOL"
 	COMMA       = "COMMA"
 
+	TRUE  = "TRUE"
+	FALSE = "FALSE"
+
 	ADD      = "ADD"
 	MINUS    = "MINUS"
 	MULTIPLY = "MULTIPLY"
@@ -95,6 +98,8 @@ var keywords = map[string]string{
 	"入":   TO,
 	"聽到":  FUNCTION,
 	"俾我":  RETURN,
+	"啱":   TRUE,
+	"錯":   FALSE,
 }
 
 func LookUpSymbol(symbol rune) string {

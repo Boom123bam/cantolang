@@ -27,6 +27,26 @@ func TestInteger(t *testing.T) {
 	}
 }
 
+func TestBool(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"true", true},
+		{"false", false},
+	}
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		boolObj, ok := output.(object.Boolean)
+		if !ok {
+			t.Errorf("Expected object.Boolean got %T", output)
+		}
+		if boolObj.Value != test.expected {
+			t.Errorf("expected %t got %+v (type %T)", test.expected, boolObj.Value, boolObj.Value)
+		}
+	}
+}
+
 func testEval(t *testing.T, input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)

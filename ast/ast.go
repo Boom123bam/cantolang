@@ -43,6 +43,11 @@ type IntegerLiteral struct {
 	Value int
 }
 
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
 type FunctionDefStatment struct {
 	Token      token.Token // token.initialize
 	Identifier string
@@ -94,6 +99,13 @@ func (il *IntegerLiteral) token() *token.Token {
 }
 func (il *IntegerLiteral) String() string {
 	return il.Token.TokenLiteral
+}
+
+func (b *Boolean) token() *token.Token {
+	return &b.Token
+}
+func (b *Boolean) String() string {
+	return b.Token.TokenLiteral
 }
 
 func (fd *FunctionDefStatment) token() *token.Token {

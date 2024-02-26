@@ -186,6 +186,10 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		left = p.parseGroupedExpression()
 	} else if p.currentToken.TokenType == token.IF {
 		left = p.parseIfExpression()
+	} else if p.currentToken.TokenType == token.TRUE {
+		left = &ast.Boolean{Token: p.currentToken, Value: true}
+	} else if p.currentToken.TokenType == token.FALSE {
+		left = &ast.Boolean{Token: p.currentToken, Value: false}
 	} else {
 		val, err := strconv.Atoi(p.currentToken.TokenLiteral)
 		if err != nil {

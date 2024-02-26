@@ -4,6 +4,8 @@
 - evaluate bool
 - evaluate prefix
 - evaluate infix
+- eval if else
+- eval let
 
 # done
 

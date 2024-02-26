@@ -49,7 +49,7 @@ func TestIntegerStatements(t *testing.T) {
 	2。
 	1。
 	`
-	expected := []string{"2", "1"}
+	expected := []int{2, 1}
 
 	l := lexer.New(input)
 	p := New(l)
@@ -65,11 +65,37 @@ func TestIntegerStatements(t *testing.T) {
 		if !ok {
 			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
 		}
-		if exprStatement.Token.TokenType != token.NUMBER {
-			t.Errorf("[%d] expected tokenType '%s' got %s", i, token.NUMBER, exprStatement.Token.TokenType)
+		intLit, ok := exprStatement.Expression.(*ast.IntegerLiteral)
+		if intLit.Value != expected[i] {
+			t.Errorf("[%d] expected value '%d' got %d", i, expected[i], intLit.Value)
 		}
-		if exprStatement.Token.TokenLiteral != expected[i] {
-			t.Errorf("[%d] expected token literal '%s' got %s", i, expected[i], exprStatement.Token.TokenLiteral)
+	}
+}
+
+func TestBoolStatements(t *testing.T) {
+	input := `
+	啱。
+	錯。
+	`
+	expected := []bool{true, false}
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+
+	if len(program.Statements) != 2 {
+		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		bool, ok := exprStatement.Expression.(*ast.Boolean)
+		if bool.Value != expected[i] {
+			t.Errorf("[%d] expected value '%t' got %t", i, expected[i], bool.Value)
 		}
 	}
 }

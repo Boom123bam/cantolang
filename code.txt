@@ -8,6 +8,10 @@
 a 大D。
 a 細D。
 
+// boolean
+啱
+錯
+
 // compare
 （a 係 b）
 （a 細過 b）
