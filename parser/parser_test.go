@@ -8,7 +8,7 @@ import (
 )
 
 func checkParserErrors(p *Parser, t *testing.T) {
-	for i, e := range p.errors {
+	for i, e := range p.Errors {
 		t.Errorf("Errors[%d]: %s", i, e)
 	}
 }

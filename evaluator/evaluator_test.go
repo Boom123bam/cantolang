@@ -17,7 +17,7 @@ func TestInteger(t *testing.T) {
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
-		intObj, ok := output.(object.Integer)
+		intObj, ok := output.(*object.Integer)
 		if !ok {
 			t.Errorf("Expected object.Integer got %T", output)
 		}
@@ -37,7 +37,7 @@ func TestBool(t *testing.T) {
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
-		boolObj, ok := output.(object.Boolean)
+		boolObj, ok := output.(*object.Boolean)
 		if !ok {
 			t.Errorf("Expected object.Boolean got %T", output)
 		}

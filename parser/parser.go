@@ -34,7 +34,7 @@ type Parser struct {
 	lexer        *lexer.Lexer
 	currentToken token.Token
 	peekToken    token.Token
-	errors       []string
+	Errors       []string
 	prefixes     []string
 	infixes      []string
 }
@@ -57,7 +57,7 @@ func (p *Parser) advance() {
 func (p *Parser) expectPeek(expectedTokenType string) bool {
 	p.advance()
 	if p.currentToken.TokenType != expectedTokenType {
-		p.errors = append(p.errors, fmt.Sprintf("expected %s got %s", expectedTokenType, p.currentToken.TokenType))
+		p.Errors = append(p.Errors, fmt.Sprintf("expected %s got %s", expectedTokenType, p.currentToken.TokenType))
 		return false
 	}
 	return true
@@ -194,15 +194,14 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	case p.currentToken.TokenType == token.NUMBER:
 		val, err := strconv.Atoi(p.currentToken.TokenLiteral)
 		if err != nil {
-			p.errors = append(p.errors, fmt.Sprintf("cannot convert %s(%s) to number", p.currentToken.TokenLiteral, p.currentToken.TokenType))
+			p.Errors = append(p.Errors, fmt.Sprintf("cannot convert %s(%s) to number", p.currentToken.TokenLiteral, p.currentToken.TokenType))
 		}
 		left = &ast.IntegerLiteral{Token: p.currentToken, Value: val}
 	default:
-		p.errors = append(p.errors, fmt.Sprintf("invalid token %s(%s)", p.currentToken.TokenLiteral, p.currentToken.TokenType))
+		p.Errors = append(p.Errors, fmt.Sprintf("invalid token %s(%s)", p.currentToken.TokenLiteral, p.currentToken.TokenType))
 	}
 
 	for p.peekToken.TokenType != token.EOL && precedence < precedences[p.peekToken.TokenType] {
-		println("CALLL", p.currentToken.TokenType)
 		p.advance()
 		// check for infix
 		if p.isInfix(p.currentToken.TokenType) {
@@ -213,7 +212,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 			left = p.parseFunctionCall(left)
 			continue
 		}
-		p.errors = append(p.errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
+		p.Errors = append(p.Errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
 	}
 	return left
 }
@@ -222,7 +221,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	ex := p.parseExpression(LOWEST)
 	p.advance()
 	if p.currentToken.TokenType != token.CLOSE_PAREN {
-		p.errors = append(p.errors, fmt.Sprintf("expected ) got %s", p.currentToken.TokenLiteral))
+		p.Errors = append(p.Errors, fmt.Sprintf("expected ) got %s", p.currentToken.TokenLiteral))
 		return nil
 	}
 	return ex
@@ -268,7 +267,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 func (p *Parser) parseFunctionCall(left ast.Expression) ast.Expression {
 	id, ok := left.(*ast.Identifier)
 	if !ok {
-		p.errors = append(p.errors, fmt.Sprintf("expected identifier got %T", left))
+		p.Errors = append(p.Errors, fmt.Sprintf("expected identifier got %T", left))
 	}
 	fce := &ast.FunctionCallExpression{Identifier: id}
 	fce.Parameters = p.parseCallParams()
@@ -315,7 +314,7 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{Left: left, Infix: p.currentToken}
 	precedence, ok := precedences[expression.Infix.TokenType]
 	if !ok {
-		p.errors = append(p.errors, fmt.Sprintf("Infix not found: %s", expression.Infix.TokenType))
+		p.Errors = append(p.Errors, fmt.Sprintf("Infix not found: %s", expression.Infix.TokenType))
 		p.advance()
 		return nil
 	}
