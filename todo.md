@@ -1,11 +1,11 @@
 # todo
 
-- add eval error
-- eval let
+- eval assign
 - eval function
 
 # done
 
+- add eval error
 - eval if else
 - evaluate infix
 - evaluate prefix

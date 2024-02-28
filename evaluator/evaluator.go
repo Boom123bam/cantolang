@@ -4,11 +4,14 @@ import (
 	"cantolang/ast"
 	"cantolang/object"
 	"cantolang/token"
+	"fmt"
 )
 
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
+		object.ERROR.Message = ""
+		object.ERROR.Description = ""
 		return EvalProgram(node.Statements)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
@@ -25,11 +28,17 @@ func EvalProgram(statements []ast.Statement) object.Object {
 	var result object.Object
 	for _, statement := range statements {
 		result = Eval(statement)
+		if object.ERROR.Message != "" {
+			return object.ERROR
+		}
 	}
 	return result
 }
 
 func EvalExpression(expression ast.Expression) object.Object {
+	if object.ERROR.Message != "" {
+		return object.ERROR
+	}
 	switch expression := expression.(type) {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: expression.Value}
@@ -68,6 +77,12 @@ func isTruthy(obj object.Object) bool {
 
 func evalInfixExpression(left object.Object, right object.Object, infix token.Token) object.Object {
 	// + - * / 係 細過 大過
+	if object.ERROR.Message != "" {
+		return object.ERROR
+	}
+	if left.Type() != right.Type() {
+		return errorf("type mismatch", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+	}
 	l, l_ok := left.(*object.Integer)
 	r, r_ok := right.(*object.Integer)
 	switch infix.TokenType {
@@ -75,42 +90,43 @@ func evalInfixExpression(left object.Object, right object.Object, infix token.To
 		if l_ok && r_ok {
 			return &object.Integer{Value: l.Value + r.Value}
 		}
+		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MINUS:
 		if l_ok && r_ok {
 			return &object.Integer{Value: l.Value - r.Value}
 		}
+		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MULTIPLY:
 		if l_ok && r_ok {
 			return &object.Integer{Value: l.Value * r.Value}
 		}
+		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.DIVIDE:
 		if l_ok && r_ok {
 			return &object.Integer{Value: l.Value / r.Value}
 		}
+		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.LESS_THAN:
 		if l_ok && r_ok {
 			return getBoolObj(l.Value < r.Value)
 		}
+		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.GREATER_THAN:
 		if l_ok && r_ok {
 			return getBoolObj(l.Value > r.Value)
 		}
+		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.EQUAL_TO:
 		if l_ok && r_ok {
 			return getBoolObj(l.Value == r.Value)
 		}
-		lBool, ok := left.(*object.Boolean)
-		if !ok {
-			return object.NULL
+		if left.Type() == object.BOOL_OBJ && right.Type() == object.BOOL_OBJ {
+			return getBoolObj(left == right)
 		}
-		rBool, ok := right.(*object.Boolean)
-		if !ok {
-			return object.NULL
-		}
-		return getBoolObj(rBool == lBool)
+		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	}
 	// invalid infix
-	return object.NULL
+	return errorf("invalid infix", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 }
 
 func evalPrefixExpression(tokenType string, right object.Object) object.Object {
@@ -118,13 +134,13 @@ func evalPrefixExpression(tokenType string, right object.Object) object.Object {
 	case token.MINUS:
 		rightInt, ok := right.(*object.Integer)
 		if !ok {
-			return object.NULL
+			return errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
 		}
 		return &object.Integer{Value: -rightInt.Value}
 	case token.NOT:
 		rightBool, ok := right.(*object.Boolean)
 		if !ok {
-			return object.NULL
+			return errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
 		}
 		return getBoolObj(!rightBool.Value)
 	default:
@@ -137,4 +153,10 @@ func getBoolObj(b bool) *object.Boolean {
 		return object.TRUE
 	}
 	return object.FALSE
+}
+
+func errorf(message, descrigtionFormat string, a ...interface{}) *object.Error {
+	object.ERROR.Message = message
+	object.ERROR.Description = fmt.Sprintf(descrigtionFormat, a...)
+	return object.ERROR
 }

@@ -52,6 +52,8 @@ func TestBool(t *testing.T) {
 		{"3 大過 6", false},
 		{"6 大過 3", true},
 		{"3 + 3 係 6", true},
+		{"唔係(6 大過 3)", false},
+		{"唔係 唔係(6 大過 3)", true},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -65,18 +67,28 @@ func TestBool(t *testing.T) {
 	}
 }
 
-func TestNull(t *testing.T) {
-	tests := []string{
-		"1 + 啱",
-		"2 係 錯",
-		"啱 + 錯",
-		"6 大過 false",
+func TestError(t *testing.T) {
+	tests := []struct {
+		input   string
+		message string
+	}{
+		{"1 + 啱", "type mismatch"},
+		{"2 係 錯", "type mismatch"},
+		{"-啱", "invalid prefix"},
+		{"唔係 3", "invalid prefix"},
+		{"啱 + 錯", "invalid operation"},
+		{"啱 大過 錯", "invalid comparison"},
+		{"啱 大過 錯 + 錯", "invalid operation"},
+		{"如果 (啱 大過 錯) 嘅話，就 {2} 唔係就 {3}", "invalid comparison"},
 	}
-	for _, input := range tests {
-		output := testEval(t, input)
-		_, ok := output.(*object.Null)
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		err, ok := output.(*object.Error)
 		if !ok {
-			t.Errorf("Expected object.Null got %T", output)
+			t.Errorf("Expected object.Error got %T", output)
+		}
+		if err.Message != test.message {
+			t.Errorf("Expected msg: %s got %s", test.message, err.Message)
 		}
 	}
 }
