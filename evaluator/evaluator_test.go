@@ -16,6 +16,10 @@ func TestInteger(t *testing.T) {
 		{"5", 5},
 		{"-1", -1},
 		{"-5", -5},
+		{"1+3", 4},
+		{"5-3", 2},
+		{"5 - 3 + 3", 5},
+		{"5 - (3 + 3)", -1},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -38,6 +42,9 @@ func TestBool(t *testing.T) {
 		{"錯", false},
 		{"唔係 啱", false},
 		{"唔係 錯", true},
+		{"3 係 3", true},
+		{"3 係 6", false},
+		{"3 + 3 係 6", true},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -47,6 +54,21 @@ func TestBool(t *testing.T) {
 		}
 		if boolObj.Value != test.expected {
 			t.Errorf("expected %t got %+v (type %T)", test.expected, boolObj.Value, boolObj.Value)
+		}
+	}
+}
+
+func TestNull(t *testing.T) {
+	tests := []string{
+		"1 + 啱",
+		"2 係 錯",
+		"啱 + 錯",
+	}
+	for _, input := range tests {
+		output := testEval(t, input)
+		_, ok := output.(*object.Null)
+		if !ok {
+			t.Errorf("Expected object.Null got %T", output)
 		}
 	}
 }

@@ -1,11 +1,12 @@
 # todo
 
-- evaluate infix
 - eval if else
 - eval let
+- eval function
 
 # done
 
+- evaluate infix
 - evaluate prefix
 - repl
 - evaluate bool

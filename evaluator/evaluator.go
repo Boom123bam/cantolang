@@ -36,9 +36,52 @@ func EvalExpression(expression ast.Expression) object.Object {
 	case *ast.PrefixExpression:
 		right := Eval(expression.Right)
 		return evalPrefixExpression(expression.PrefixToken.TokenType, right)
+	case *ast.InfixExpression:
+		left := Eval(expression.Left)
+		right := Eval(expression.Right)
+		return evalInfixExpression(left, right, expression.Infix)
 	default:
 		return object.NULL
 	}
+}
+
+func evalInfixExpression(left object.Object, right object.Object, infix token.Token) object.Object {
+	// + - * / 係
+	l, l_ok := left.(*object.Integer)
+	r, r_ok := right.(*object.Integer)
+	switch infix.TokenType {
+	case token.ADD:
+		if l_ok && r_ok {
+			return &object.Integer{Value: l.Value + r.Value}
+		}
+	case token.MINUS:
+		if l_ok && r_ok {
+			return &object.Integer{Value: l.Value - r.Value}
+		}
+	case token.MULTIPLY:
+		if l_ok && r_ok {
+			return &object.Integer{Value: l.Value * r.Value}
+		}
+	case token.DIVIDE:
+		if l_ok && r_ok {
+			return &object.Integer{Value: l.Value / r.Value}
+		}
+	case token.EQUAL_TO:
+		if l_ok && r_ok {
+			return getBoolObj(l.Value == r.Value)
+		}
+		lBool, ok := left.(*object.Boolean)
+		if !ok {
+			return object.NULL
+		}
+		rBool, ok := right.(*object.Boolean)
+		if !ok {
+			return object.NULL
+		}
+		return getBoolObj(rBool == lBool)
+	}
+	// invalid infix
+	return object.NULL
 }
 
 func evalPrefixExpression(tokenType string, right object.Object) object.Object {
