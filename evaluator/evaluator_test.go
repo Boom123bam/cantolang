@@ -20,6 +20,11 @@ func TestInteger(t *testing.T) {
 		{"5-3", 2},
 		{"5 - 3 + 3", 5},
 		{"5 - (3 + 3)", -1},
+		{"如果 (啱) 嘅話，就 {1} 唔係就 {2}", 1},
+		{"如果 (錯) 嘅話，就 {1} 唔係就 {2}", 2},
+		{"如果 (3) 嘅話，就 {1} 唔係就 {2}", 1},
+		{"如果 (6 細過 3) 嘅話，就 {1} 唔係就 {2}", 2},
+		{"如果 (2 細過 3) 嘅話，就 {1} 唔係就 {2}", 1},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -44,6 +49,8 @@ func TestBool(t *testing.T) {
 		{"唔係 錯", true},
 		{"3 係 3", true},
 		{"3 係 6", false},
+		{"3 大過 6", false},
+		{"6 大過 3", true},
 		{"3 + 3 係 6", true},
 	}
 	for _, test := range tests {
@@ -63,6 +70,7 @@ func TestNull(t *testing.T) {
 		"1 + 啱",
 		"2 係 錯",
 		"啱 + 錯",
+		"6 大過 false",
 	}
 	for _, input := range tests {
 		output := testEval(t, input)
