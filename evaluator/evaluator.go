@@ -19,9 +19,17 @@ func Eval(node ast.Node) object.Object {
 		return EvalExpression(node)
 	case *ast.BlockStatement:
 		return EvalProgram(node.Statements)
+	case *ast.AssignStatement:
+		return EvalAssignStatement(node)
 	default:
 		return object.NULL
 	}
+}
+
+func EvalAssignStatement(as *ast.AssignStatement) object.Object {
+	val := Eval(as.Expression)
+	object.ENV.Set(as.Identifier, val)
+	return val
 }
 
 func EvalProgram(statements []ast.Statement) object.Object {
@@ -57,6 +65,12 @@ func EvalExpression(expression ast.Expression) object.Object {
 			return Eval(expression.Consequence)
 		}
 		return Eval(expression.Alternative)
+	case *ast.Identifier:
+		val, ok := object.ENV.Get(expression.Token.TokenLiteral)
+		if ok {
+			return val
+		}
+		return object.NULL
 
 	default:
 		return object.NULL

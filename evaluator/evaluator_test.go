@@ -25,6 +25,8 @@ func TestInteger(t *testing.T) {
 		{"如果 (3) 嘅話，就 {1} 唔係就 {2}", 1},
 		{"如果 (6 細過 3) 嘅話，就 {1} 唔係就 {2}", 2},
 		{"如果 (2 細過 3) 嘅話，就 {1} 唔係就 {2}", 1},
+		{"塞 3 入 i; i;", 3},
+		{"塞 5 入 i; 塞 3 入 j; i * j;", 15},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
