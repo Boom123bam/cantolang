@@ -1,6 +1,10 @@
 package object
 
-import "fmt"
+import (
+	"bytes"
+	"cantolang/ast"
+	"fmt"
+)
 
 var (
 	NULL  = &Null{}
@@ -9,10 +13,12 @@ var (
 	ERROR = &Error{}
 
 	//types
-	INT_OBJ   = "INT_OBJ"
-	NULL_OBJ  = "NULL_OBJ"
-	BOOL_OBJ  = "BOOL_OBJ"
-	ERROR_OBJ = "ERROR_OBJ"
+	INT_OBJ      = "INT_OBJ"
+	NULL_OBJ     = "NULL_OBJ"
+	BOOL_OBJ     = "BOOL_OBJ"
+	ERROR_OBJ    = "ERROR_OBJ"
+	FUNCTION_OBJ = "FUNCTION_OBJ"
+	RETURN_OBJ   = "RETURN_OBJ"
 )
 
 type Object interface {
@@ -34,6 +40,15 @@ type Null struct {
 type Error struct {
 	Message     string
 	Description string
+}
+
+type Function struct {
+	Parameters []ast.Identifier
+	Body       *ast.BlockStatement
+}
+
+type ReturnValue struct {
+	Value Object
 }
 
 func (i *Integer) Inspect() string {
@@ -62,4 +77,29 @@ func (e *Error) Inspect() string {
 }
 func (e *Error) Type() string {
 	return ERROR_OBJ
+}
+
+func (f *Function) Inspect() string {
+	b := bytes.Buffer{}
+	b.WriteString("(")
+	for i, p := range f.Parameters {
+		if i != 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(p.String())
+	}
+	b.WriteString(") { ")
+	b.WriteString(f.Body.String())
+	b.WriteString(" }")
+	return b.String()
+}
+func (f *Function) Type() string {
+	return FUNCTION_OBJ
+}
+
+func (r *ReturnValue) Inspect() string {
+	return "return " + r.Value.Inspect()
+}
+func (r *ReturnValue) Type() string {
+	return RETURN_OBJ
 }

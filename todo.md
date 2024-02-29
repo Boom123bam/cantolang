@@ -1,10 +1,10 @@
 # todo
 
-- eval assign
 - eval function
 
 # done
 
+- eval assign
 - add eval error
 - eval if else
 - evaluate infix

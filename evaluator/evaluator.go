@@ -21,14 +21,24 @@ func Eval(node ast.Node) object.Object {
 		return EvalProgram(node.Statements)
 	case *ast.AssignStatement:
 		return EvalAssignStatement(node)
+	case *ast.FunctionDefStatment:
+		return EvalFunctionDefStatement(node)
+	case *ast.ReturnStatement:
+		return &object.ReturnValue{Value: Eval(node.Expression)}
 	default:
 		return object.NULL
 	}
 }
 
-func EvalAssignStatement(as *ast.AssignStatement) object.Object {
-	val := Eval(as.Expression)
-	object.ENV.Set(as.Identifier, val)
+func EvalFunctionDefStatement(statement *ast.FunctionDefStatment) object.Object {
+	function := &object.Function{Parameters: statement.Parameters, Body: statement.Body}
+	object.ENV.Set(statement.Identifier, function)
+	return function
+}
+
+func EvalAssignStatement(statement *ast.AssignStatement) object.Object {
+	val := Eval(statement.Expression)
+	object.ENV.Set(statement.Identifier, val)
 	return val
 }
 
@@ -36,6 +46,9 @@ func EvalProgram(statements []ast.Statement) object.Object {
 	var result object.Object
 	for _, statement := range statements {
 		result = Eval(statement)
+		if result.Type() == object.RETURN_OBJ {
+			return result.(*object.ReturnValue).Value
+		}
 		if object.ERROR.Message != "" {
 			return object.ERROR
 		}
@@ -71,6 +84,19 @@ func EvalExpression(expression ast.Expression) object.Object {
 			return val
 		}
 		return object.NULL
+	case *ast.FunctionCallExpression:
+		obj, ok := object.ENV.Get(expression.Identifier.Token.TokenLiteral)
+		if !ok {
+			return errorf("undefined variable", "%s is used before assignment", expression.Identifier.Token.TokenLiteral)
+		}
+		function, ok := obj.(*object.Function)
+		if !ok {
+			return errorf("type error", "%s expected function type got %T", expression.Identifier.Token.TokenLiteral, obj)
+		}
+		for i, p := range function.Parameters {
+			object.ENV.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i]))
+		}
+		return Eval(function.Body)
 
 	default:
 		return object.NULL

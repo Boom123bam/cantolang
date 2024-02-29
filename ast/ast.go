@@ -114,12 +114,9 @@ func (b *Boolean) String() string {
 	return b.Token.TokenLiteral
 }
 
-func (fd *FunctionDefStatment) token() *token.Token {
-	return &fd.Token
-}
 func (fd *FunctionDefStatment) String() string {
 	buff := bytes.Buffer{}
-	buff.WriteString(fd.token().TokenLiteral + " ")
+	buff.WriteString(fd.Token.TokenLiteral + " ")
 	buff.WriteString(fd.Identifier + "(")
 	for i, param := range fd.Parameters {
 		if i != 0 {

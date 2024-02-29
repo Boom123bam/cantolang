@@ -143,6 +143,9 @@ func (p *Parser) parseFunctionDefStatement() *ast.FunctionDefStatment {
 	}
 	p.advance()
 	statement.Body = p.parseBlockStatement()
+	if p.peekToken.TokenType == token.EOL {
+		p.advance()
+	}
 	return statement
 
 }

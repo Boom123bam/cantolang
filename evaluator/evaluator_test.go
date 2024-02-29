@@ -101,3 +101,38 @@ func testEval(t *testing.T, input string) object.Object {
 	program := p.ParseProgram()
 	return Eval(program)
 }
+
+func TestFunction(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`聽到 identity（x） 嘅話，就「
+		     x。
+		」; identity(15);`, 15},
+		{`聽到 sum（x, y） 嘅話，就「
+		     x + y。
+		」; sum(15, 5);`, 20},
+		{`聽到 identity（x） 嘅話，就「
+		     俾我 x。
+		」; identity(15);`, 15},
+		{`聽到 sum（x, y） 嘅話，就「
+		     俾我 x + y。
+		」; sum(15, 5);`, 20},
+		// {`塞 3 入 x;
+		// 聽到 sum（x, y） 嘅話，就「
+		//      俾我 x + y。
+		// 」; sum(15, 5);
+		// x;`, 3},
+	}
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		intObj, ok := output.(*object.Integer)
+		if !ok {
+			t.Errorf("Expected object.Integer got %T", output)
+		}
+		if intObj.Value != test.expected {
+			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
+		}
+	}
+}
