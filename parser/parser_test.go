@@ -383,3 +383,25 @@ func TestFunctionCall(t *testing.T) {
 	}
 
 }
+
+func TestAssignStatement(t *testing.T) {
+	input := "塞 (2 + 3) 入 i"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	rs, ok := program.Statements[0].(*ast.AssignStatement)
+	if !ok {
+		t.Errorf("expected AssignStatement got %T", program.Statements[0])
+	}
+	if rs.Token.TokenType != token.ASSIGN {
+		t.Errorf("expected assign tok got %s", rs.Token.TokenType)
+	}
+	if rs.Expression.String() != "(2 + 3)" {
+		t.Errorf("expected expression (2 + 3) got %s", rs.Expression.String())
+	}
+}

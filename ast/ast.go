@@ -28,6 +28,12 @@ type InitializeStatement struct {
 	Identifier string
 }
 
+type AssignStatement struct {
+	Token      token.Token // token.assign
+	Identifier string
+	Expression Expression
+}
+
 type ReturnStatement struct {
 	Token      token.Token // token.return
 	Expression Expression
@@ -190,6 +196,10 @@ func (bs *BlockStatement) String() string {
 
 func (is *InitializeStatement) String() string {
 	return is.Token.TokenLiteral + is.Identifier
+}
+
+func (as *AssignStatement) String() string {
+	return as.Token.TokenLiteral + as.Expression.String() + "-> " + as.Identifier
 }
 
 func (rs *ReturnStatement) String() string {

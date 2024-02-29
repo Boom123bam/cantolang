@@ -73,6 +73,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		s = p.parseInitializeStatement()
 	case token.RETURN:
 		s = p.parseReturnStatement()
+	case token.ASSIGN:
+		s = p.parseAssignStatement()
 	case token.FUNCTION:
 		s = p.parseFunctionDefStatement()
 	default:
@@ -98,6 +100,19 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	statement := &ast.ReturnStatement{Token: p.currentToken}
 	p.advance()
 	statement.Expression = p.parseExpression(LOWEST)
+	if p.peekToken.TokenType == token.EOL {
+		p.advance()
+	}
+	return statement
+}
+
+func (p *Parser) parseAssignStatement() *ast.AssignStatement {
+	statement := &ast.AssignStatement{Token: p.currentToken}
+	p.advance()
+	statement.Expression = p.parseExpression(LOWEST)
+	p.expectPeek(token.TO)
+	p.expectPeek(token.IDENTIFIER)
+	statement.Identifier = p.currentToken.TokenLiteral
 	if p.peekToken.TokenType == token.EOL {
 		p.advance()
 	}
