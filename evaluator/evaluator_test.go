@@ -99,7 +99,7 @@ func testEval(t *testing.T, input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
-	return Eval(program)
+	return Eval(program, object.NewEnvironment(nil))
 }
 
 func TestFunction(t *testing.T) {
@@ -107,23 +107,50 @@ func TestFunction(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{`聽到 identity（x） 嘅話，就「
+		{`
+		聽到 identity（x） 嘅話，就「
 		     x。
-		」; identity(15);`, 15},
-		{`聽到 sum（x, y） 嘅話，就「
+		」;
+		identity(15);
+		`, 15},
+
+		{`
+		聽到 sum（x, y） 嘅話，就「
 		     x + y。
-		」; sum(15, 5);`, 20},
-		{`聽到 identity（x） 嘅話，就「
+		」;
+		sum(15, 5);
+		`, 20},
+
+		{`
+		聽到 identity（x） 嘅話，就「
 		     俾我 x。
-		」; identity(15);`, 15},
-		{`聽到 sum（x, y） 嘅話，就「
+		」;
+		identity(15);
+		`, 15},
+
+		{`
+		聽到 sum（x, y） 嘅話，就「
 		     俾我 x + y。
-		」; sum(15, 5);`, 20},
-		// {`塞 3 入 x;
-		// 聽到 sum（x, y） 嘅話，就「
-		//      俾我 x + y。
-		// 」; sum(15, 5);
-		// x;`, 3},
+		」;
+		sum(15, 5);
+		`, 20},
+
+		{`
+		塞 3 入 x;
+		聽到 sum（x, y） 嘅話，就「
+		     俾我 x + y。
+		」;
+		sum(15, 5);
+		x;
+		`, 3},
+
+		{`
+		塞 3 入 x;
+		聽到 sum（x, y） 嘅話，就「
+		     俾我 x + y。
+		」;
+		sum(1, sum(2, sum(3, 4)));
+		`, 10},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)

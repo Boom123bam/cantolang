@@ -7,45 +7,45 @@ import (
 	"fmt"
 )
 
-func Eval(node ast.Node) object.Object {
+func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
 		object.ERROR.Message = ""
 		object.ERROR.Description = ""
-		return EvalProgram(node.Statements)
+		return EvalProgram(node.Statements, env)
 	case *ast.ExpressionStatement:
-		return Eval(node.Expression)
+		return Eval(node.Expression, env)
 	case ast.Expression:
-		return EvalExpression(node)
+		return EvalExpression(node, env)
 	case *ast.BlockStatement:
-		return EvalProgram(node.Statements)
+		return EvalProgram(node.Statements, env)
 	case *ast.AssignStatement:
-		return EvalAssignStatement(node)
+		return EvalAssignStatement(node, env)
 	case *ast.FunctionDefStatment:
-		return EvalFunctionDefStatement(node)
+		return EvalFunctionDefStatement(node, env)
 	case *ast.ReturnStatement:
-		return &object.ReturnValue{Value: Eval(node.Expression)}
+		return &object.ReturnValue{Value: Eval(node.Expression, env)}
 	default:
 		return object.NULL
 	}
 }
 
-func EvalFunctionDefStatement(statement *ast.FunctionDefStatment) object.Object {
+func EvalFunctionDefStatement(statement *ast.FunctionDefStatment, env *object.Environment) object.Object {
 	function := &object.Function{Parameters: statement.Parameters, Body: statement.Body}
-	object.ENV.Set(statement.Identifier, function)
+	env.Set(statement.Identifier, function)
 	return function
 }
 
-func EvalAssignStatement(statement *ast.AssignStatement) object.Object {
-	val := Eval(statement.Expression)
-	object.ENV.Set(statement.Identifier, val)
+func EvalAssignStatement(statement *ast.AssignStatement, env *object.Environment) object.Object {
+	val := Eval(statement.Expression, env)
+	env.Set(statement.Identifier, val)
 	return val
 }
 
-func EvalProgram(statements []ast.Statement) object.Object {
+func EvalProgram(statements []ast.Statement, env *object.Environment) object.Object {
 	var result object.Object
 	for _, statement := range statements {
-		result = Eval(statement)
+		result = Eval(statement, env)
 		if result.Type() == object.RETURN_OBJ {
 			return result.(*object.ReturnValue).Value
 		}
@@ -56,7 +56,7 @@ func EvalProgram(statements []ast.Statement) object.Object {
 	return result
 }
 
-func EvalExpression(expression ast.Expression) object.Object {
+func EvalExpression(expression ast.Expression, env *object.Environment) object.Object {
 	if object.ERROR.Message != "" {
 		return object.ERROR
 	}
@@ -66,26 +66,26 @@ func EvalExpression(expression ast.Expression) object.Object {
 	case *ast.Boolean:
 		return getBoolObj(expression.Value)
 	case *ast.PrefixExpression:
-		right := Eval(expression.Right)
+		right := Eval(expression.Right, env)
 		return evalPrefixExpression(expression.PrefixToken.TokenType, right)
 	case *ast.InfixExpression:
-		left := Eval(expression.Left)
-		right := Eval(expression.Right)
+		left := Eval(expression.Left, env)
+		right := Eval(expression.Right, env)
 		return evalInfixExpression(left, right, expression.Infix)
 	case *ast.IfExpression:
-		condition := Eval(expression.Condition)
+		condition := Eval(expression.Condition, env)
 		if isTruthy(condition) {
-			return Eval(expression.Consequence)
+			return Eval(expression.Consequence, env)
 		}
-		return Eval(expression.Alternative)
+		return Eval(expression.Alternative, env)
 	case *ast.Identifier:
-		val, ok := object.ENV.Get(expression.Token.TokenLiteral)
+		val, ok := env.Get(expression.Token.TokenLiteral)
 		if ok {
 			return val
 		}
 		return object.NULL
 	case *ast.FunctionCallExpression:
-		obj, ok := object.ENV.Get(expression.Identifier.Token.TokenLiteral)
+		obj, ok := env.Get(expression.Identifier.Token.TokenLiteral)
 		if !ok {
 			return errorf("undefined variable", "%s is used before assignment", expression.Identifier.Token.TokenLiteral)
 		}
@@ -93,10 +93,11 @@ func EvalExpression(expression ast.Expression) object.Object {
 		if !ok {
 			return errorf("type error", "%s expected function type got %T", expression.Identifier.Token.TokenLiteral, obj)
 		}
+		childEnv := object.NewEnvironment(env)
 		for i, p := range function.Parameters {
-			object.ENV.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i]))
+			childEnv.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i], childEnv))
 		}
-		return Eval(function.Body)
+		return Eval(function.Body, childEnv)
 
 	default:
 		return object.NULL
