@@ -7,9 +7,6 @@ import (
 
 func TestLexer(t *testing.T) {
 	input := `
-	// initialize
-    叫佢 i。
-
     當 （i 細過 8） 時，就「
         講（i）。
         塞 i 加 1 入 i。
@@ -22,10 +19,6 @@ func TestLexer(t *testing.T) {
 		Type    string
 		Literal string
 	}{
-		{token.COMMENT, ""},
-		{token.INITIALIZE, "叫佢"},
-		{token.IDENTIFIER, "i"},
-		{token.EOL, "。"},
 		{token.WHILE, "當"},
 		{token.OPEN_PAREN, "（"},
 		{token.IDENTIFIER, "i"},

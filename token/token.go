@@ -19,8 +19,6 @@ const (
 	INCREMENT = "INCREMENT"
 	DECREMENT = "DECREMENT"
 
-	INITIALIZE = "INITIALIZE"
-
 	ASSIGN = "ASSIGN"
 	TO     = "TO"
 
@@ -90,7 +88,6 @@ var keywords = map[string]string{
 	"嘅話":  GEWA,
 	"大D":  INCREMENT,
 	"細D":  DECREMENT,
-	"叫佢":  INITIALIZE,
 	"就":   THEN,
 	"當":   WHILE,
 	"時":   SI,

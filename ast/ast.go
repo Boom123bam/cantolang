@@ -23,11 +23,6 @@ type Expression interface {
 	String() string
 }
 
-type InitializeStatement struct {
-	Token      token.Token // token.initialize
-	Identifier string
-}
-
 type AssignStatement struct {
 	Token      token.Token // token.assign
 	Identifier string
@@ -55,7 +50,7 @@ type Boolean struct {
 }
 
 type FunctionDefStatment struct {
-	Token      token.Token // token.initialize
+	Token      token.Token // token.function
 	Identifier string
 	Parameters []Identifier
 	Body       *BlockStatement
@@ -189,10 +184,6 @@ func (bs *BlockStatement) String() string {
 		buff.WriteString(s.String())
 	}
 	return buff.String()
-}
-
-func (is *InitializeStatement) String() string {
-	return is.Token.TokenLiteral + is.Identifier
 }
 
 func (as *AssignStatement) String() string {

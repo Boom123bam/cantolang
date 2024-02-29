@@ -69,8 +69,6 @@ func (p *Parser) ParseStatement() ast.Statement {
 	}
 	var s ast.Statement
 	switch p.currentToken.TokenType {
-	case token.INITIALIZE:
-		s = p.parseInitializeStatement()
 	case token.RETURN:
 		s = p.parseReturnStatement()
 	case token.ASSIGN:
@@ -82,18 +80,6 @@ func (p *Parser) ParseStatement() ast.Statement {
 	}
 	p.advance()
 	return s
-}
-
-func (p *Parser) parseInitializeStatement() *ast.InitializeStatement {
-	statement := &ast.InitializeStatement{Token: p.currentToken}
-	if !p.expectPeek(token.IDENTIFIER) {
-		return nil
-	}
-	statement.Identifier = p.currentToken.TokenLiteral
-	if p.peekToken.TokenType == token.EOL {
-		p.advance()
-	}
-	return statement
 }
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {

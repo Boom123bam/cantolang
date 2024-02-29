@@ -1,6 +1,3 @@
-// initialize
-叫佢 i。
-
 // assignment
 塞 0 入 i。
 
