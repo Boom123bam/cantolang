@@ -5,10 +5,11 @@ import (
 )
 
 type Lexer struct {
-	input    []rune
-	pos      int
-	char     rune
-	peekChar rune
+	input      []rune
+	pos        int
+	char       rune
+	peekChar   rune
+	quotePairs map[rune]rune
 }
 
 func New(input string) *Lexer {
@@ -16,6 +17,11 @@ func New(input string) *Lexer {
 		input: []rune(input),
 	}
 	l.pos = -1
+	l.quotePairs = map[rune]rune{
+		'"': '"',
+		'“': '”',
+		'”': 0,
+	}
 	l.advance()
 	return l
 }
@@ -38,6 +44,19 @@ func (l *Lexer) readIdentifier() string {
 	result := ""
 	for isAllowedInIdent(l.char) {
 		result += string(l.char)
+		l.advance()
+	}
+	return result
+}
+
+func (l *Lexer) readString(endChar rune) string {
+	l.advance()
+	result := ""
+	for l.char != endChar && l.char != 0 {
+		result += string(l.char)
+		l.advance()
+	}
+	if l.char == endChar {
 		l.advance()
 	}
 	return result
@@ -80,6 +99,7 @@ func (l *Lexer) ReadToken() token.Token {
 	}
 	var t token.Token
 
+	// check for comment
 	if l.char == '/' && l.peekChar == '/' {
 		for l.char != '\n' {
 			l.advance()
@@ -90,7 +110,7 @@ func (l *Lexer) ReadToken() token.Token {
 	// check for symbol
 	symbol := token.LookUpSymbol(l.char)
 	if symbol != token.TEMP_NOT_SYMBOL {
-		t.TokenType = token.LookUpSymbol(l.char)
+		t.TokenType = symbol
 		t.TokenLiteral = string(l.char)
 		l.advance()
 		return t
@@ -99,6 +119,18 @@ func (l *Lexer) ReadToken() token.Token {
 	if l.char >= '0' && l.char <= '9' {
 		t.TokenType = token.NUMBER
 		t.TokenLiteral = l.readNumber()
+		return t
+	}
+	// check for string
+	matchingQuote, ok := l.quotePairs[l.char]
+	if ok {
+		if matchingQuote == 0 {
+			t.TokenType = token.INVALID
+			t.TokenLiteral = string(l.char)
+			return t
+		}
+		t.TokenType = token.STRING
+		t.TokenLiteral = l.readString(matchingQuote)
 		return t
 	}
 

@@ -374,3 +374,31 @@ func TestAssignStatement(t *testing.T) {
 		t.Errorf("expected expression (2 + 3) got %s", rs.Expression.String())
 	}
 }
+
+func TestStringStatements(t *testing.T) {
+	input := `
+	"joe"。
+	"hi world"。
+	`
+	expected := []string{"joe", "hi world"}
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+
+	if len(program.Statements) != 2 {
+		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		strLit, ok := exprStatement.Expression.(*ast.StringLiteral)
+		if strLit.Value != expected[i] {
+			t.Errorf("[%d] expected value '%s' got %s", i, expected[i], strLit.Value)
+		}
+	}
+}

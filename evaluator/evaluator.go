@@ -63,6 +63,8 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 	switch expression := expression.(type) {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: expression.Value}
+	case *ast.StringLiteral:
+		return &object.String{Value: expression.Value}
 	case *ast.Boolean:
 		return getBoolObj(expression.Value)
 	case *ast.PrefixExpression:

@@ -163,3 +163,24 @@ func TestFunction(t *testing.T) {
 		}
 	}
 }
+
+func TestString(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`"hello world"`, "hello world"},
+		{`“塞 塞 塞”`, "塞 塞 塞"},
+		{`"hello" + " " + "world"`, "hello world"},
+	}
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		strObj, ok := output.(*object.String)
+		if !ok {
+			t.Errorf("Expected object.String got %T (%+v)", output, output)
+		}
+		if strObj.Value != test.expected {
+			t.Errorf("expected %s got %+v (type %T)", test.expected, strObj.Value, strObj.Value)
+		}
+	}
+}

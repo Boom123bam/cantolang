@@ -1,9 +1,12 @@
 # todo
 
-- eval function
+- concatenation
+- built in funcs
 
 # done
 
+- add string
+- eval function
 - eval assign
 - add eval error
 - eval if else

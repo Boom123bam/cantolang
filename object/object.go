@@ -14,6 +14,7 @@ var (
 
 	//types
 	INT_OBJ      = "INT_OBJ"
+	STRING_OBJ   = "STRING_OBJ"
 	NULL_OBJ     = "NULL_OBJ"
 	BOOL_OBJ     = "BOOL_OBJ"
 	ERROR_OBJ    = "ERROR_OBJ"
@@ -28,6 +29,10 @@ type Object interface {
 
 type Integer struct {
 	Value int
+}
+
+type String struct {
+	Value string
 }
 
 type Boolean struct {
@@ -56,6 +61,13 @@ func (i *Integer) Inspect() string {
 }
 func (i *Integer) Type() string {
 	return INT_OBJ
+}
+
+func (s *String) Inspect() string {
+	return s.Value
+}
+func (s *String) Type() string {
+	return STRING_OBJ
 }
 
 func (b *Boolean) Inspect() string {

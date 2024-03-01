@@ -201,6 +201,9 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 			p.Errors = append(p.Errors, fmt.Sprintf("cannot convert %s(%s) to number", p.currentToken.TokenLiteral, p.currentToken.TokenType))
 		}
 		left = &ast.IntegerLiteral{Token: p.currentToken, Value: val}
+	case p.currentToken.TokenType == token.STRING:
+		left = &ast.StringLiteral{Token: p.currentToken, Value: p.currentToken.TokenLiteral}
+
 	default:
 		p.Errors = append(p.Errors, fmt.Sprintf("invalid token %s(%s)", p.currentToken.TokenLiteral, p.currentToken.TokenType))
 	}

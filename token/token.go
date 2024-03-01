@@ -5,8 +5,9 @@ const (
 	CLOSE_PAREN = "CLOSE_PAREN"
 	OPEN_BRACE  = "OPEN_BRACE"
 	CLOSE_BRACE = "CLOSE_BRACE"
-	EOL         = "EOL"
-	COMMA       = "COMMA"
+
+	EOL   = "EOL"
+	COMMA = "COMMA"
 
 	TRUE  = "TRUE"
 	FALSE = "FALSE"
@@ -42,10 +43,12 @@ const (
 	FUNCTION = "FUNCTION"
 	RETURN   = "RETURN"
 
-	IDENTIFIER      = "IDENTIFIER"
-	INVALID         = "INVALID"
-	COMMENT         = "COMMENT"
-	NUMBER          = "NUMBER"
+	IDENTIFIER = "IDENTIFIER"
+	INVALID    = "INVALID"
+	COMMENT    = "COMMENT"
+	NUMBER     = "NUMBER"
+	STRING     = "STRING"
+
 	EOF             = "EOF"
 	TEMP_NOT_SYMBOL = "TEMP_NOT_SYMBOL"
 )

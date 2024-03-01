@@ -208,6 +208,34 @@ func TestBool(t *testing.T) {
 		{token.TO, "入"},
 		{token.IDENTIFIER, "i"},
 		{token.EOL, "。"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, exp := range expectedTokens {
+		got := l.ReadToken()
+		if got.TokenLiteral != exp.Literal {
+			t.Errorf("tests[%d] Expected literal '%s' got '%s'", i, exp.Literal, got.TokenLiteral)
+		}
+		if got.TokenType != exp.Type {
+			t.Errorf("tests[%d] Expected type '%s' got '%s'", i, exp.Type, got.TokenType)
+		}
+
+	}
+}
+
+func TestString(t *testing.T) {
+	input := `
+	"cantolang"
+	“hello world”
+`
+
+	expectedTokens := []struct {
+		Type    string
+		Literal string
+	}{
+		{token.STRING, "cantolang"},
+		{token.STRING, "hello world"},
+		{token.EOF, ""},
 	}
 	l := New(input)
 	for i, exp := range expectedTokens {
