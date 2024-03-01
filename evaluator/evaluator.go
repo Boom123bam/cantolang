@@ -126,44 +126,50 @@ func evalInfixExpression(left object.Object, right object.Object, infix token.To
 	if left.Type() != right.Type() {
 		return errorf("type mismatch", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	}
-	l, l_ok := left.(*object.Integer)
-	r, r_ok := right.(*object.Integer)
+	lInt, l_ok := left.(*object.Integer)
+	rInt, r_ok := right.(*object.Integer)
 	switch infix.TokenType {
 	case token.ADD:
 		if l_ok && r_ok {
-			return &object.Integer{Value: l.Value + r.Value}
+			return &object.Integer{Value: lInt.Value + rInt.Value}
+		}
+		if left.Type() == object.STRING_OBJ {
+			return &object.String{Value: left.(*object.String).Value + right.(*object.String).Value}
 		}
 		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MINUS:
 		if l_ok && r_ok {
-			return &object.Integer{Value: l.Value - r.Value}
+			return &object.Integer{Value: lInt.Value - rInt.Value}
 		}
 		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MULTIPLY:
 		if l_ok && r_ok {
-			return &object.Integer{Value: l.Value * r.Value}
+			return &object.Integer{Value: lInt.Value * rInt.Value}
 		}
 		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.DIVIDE:
 		if l_ok && r_ok {
-			return &object.Integer{Value: l.Value / r.Value}
+			return &object.Integer{Value: lInt.Value / rInt.Value}
 		}
 		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.LESS_THAN:
 		if l_ok && r_ok {
-			return getBoolObj(l.Value < r.Value)
+			return getBoolObj(lInt.Value < rInt.Value)
 		}
 		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.GREATER_THAN:
 		if l_ok && r_ok {
-			return getBoolObj(l.Value > r.Value)
+			return getBoolObj(lInt.Value > rInt.Value)
 		}
 		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.EQUAL_TO:
 		if l_ok && r_ok {
-			return getBoolObj(l.Value == r.Value)
+			return getBoolObj(lInt.Value == rInt.Value)
 		}
-		if left.Type() == object.BOOL_OBJ && right.Type() == object.BOOL_OBJ {
+		if left.Type() == object.STRING_OBJ {
+			return getBoolObj(left.(*object.String).Value == right.(*object.String).Value)
+		}
+		if left.Type() == object.BOOL_OBJ {
 			return getBoolObj(left == right)
 		}
 		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)

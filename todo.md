@@ -1,10 +1,11 @@
 # todo
 
-- concatenation
 - built in funcs
 
 # done
 
+- string comparison
+- concatenation
 - add string
 - eval function
 - eval assign

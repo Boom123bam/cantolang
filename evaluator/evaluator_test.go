@@ -56,6 +56,8 @@ func TestBool(t *testing.T) {
 		{"3 + 3 係 6", true},
 		{"唔係(6 大過 3)", false},
 		{"唔係 唔係(6 大過 3)", true},
+		{`"hi" 係 "amogus"`, false},
+		{`"fart" 係 "fart"`, true},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
