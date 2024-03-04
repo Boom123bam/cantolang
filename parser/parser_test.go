@@ -431,3 +431,37 @@ func TestArrayStatements(t *testing.T) {
 		}
 	}
 }
+
+func TestIndexStatements(t *testing.T) {
+	input := `
+	[1,2,3][69]。
+	`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		exp, ok := exprStatement.Expression.(*ast.IndexExpression)
+		if !ok {
+			t.Errorf("[%d] expected ast.IndexExpression got %T", i, exprStatement.Expression)
+		}
+		num, ok := exp.Index.(*ast.IntegerLiteral)
+		if !ok {
+			t.Errorf("[%d] expected type ast.IntegerLiteral got %T", i, exp.Index)
+		}
+		if num.Value != 69 {
+			t.Errorf("exp 69 got %d", num.Value)
+		}
+
+	}
+}

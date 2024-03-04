@@ -54,6 +54,12 @@ type ArrayLiteral struct {
 	Items []Expression
 }
 
+type IndexExpression struct {
+	Token token.Token
+	Left  Expression
+	Index Expression
+}
+
 type Boolean struct {
 	Token token.Token
 	Value bool
@@ -133,6 +139,13 @@ func (al *ArrayLiteral) String() string {
 	}
 	buff.WriteString("]")
 	return buff.String()
+}
+
+func (ie *IndexExpression) token() *token.Token {
+	return &ie.Token
+}
+func (ie *IndexExpression) String() string {
+	return ie.Left.String() + "[" + ie.Index.String() + "]"
 }
 
 func (b *Boolean) token() *token.Token {

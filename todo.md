@@ -1,9 +1,10 @@
 # todo
 
-- add array
+- add indexing
 
 # done
 
+- add array
 - built in funcs
 - string comparison
 - concatenation

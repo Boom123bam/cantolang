@@ -17,6 +17,7 @@ const (
 	PRODUCT    // *
 	PREFIX     // -X or !X
 	CALL       // myFunction(X)
+	INDEX      // myArr[X]
 )
 
 var precedences = map[string]int{
@@ -28,6 +29,7 @@ var precedences = map[string]int{
 	token.MULTIPLY:     PRODUCT,
 	token.DIVIDE:       PRODUCT,
 	token.OPEN_PAREN:   CALL,
+	token.OPEN_BRACKET: INDEX,
 }
 
 type Parser struct {
@@ -218,9 +220,11 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		if p.isInfix(p.currentToken.TokenType) {
 			left = p.parseInfixExpression(left)
 			continue
-		}
-		if p.currentToken.TokenType == token.OPEN_PAREN {
+		} else if p.currentToken.TokenType == token.OPEN_PAREN {
 			left = p.parseFunctionCall(left)
+			continue
+		} else if p.currentToken.TokenType == token.OPEN_BRACKET {
+			left = p.parseIndexExpression(left)
 			continue
 		}
 		p.Errors = append(p.Errors, fmt.Sprintf("infix token expected, got %s", p.currentToken.TokenType))
@@ -289,6 +293,15 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		ex.Alternative = p.parseBlockStatement()
 	}
 	return ex
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Left: left, Token: p.currentToken}
+	p.advance()
+	index := p.parseExpression(LOWEST)
+	p.expectPeek(token.CLOSE_BRACKET)
+	exp.Index = index
+	return exp
 }
 
 func (p *Parser) parseFunctionCall(left ast.Expression) ast.Expression {

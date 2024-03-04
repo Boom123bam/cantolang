@@ -27,12 +27,16 @@ func TestInteger(t *testing.T) {
 		{"如果 (2 細過 3) 嘅話，就 {1} 唔係就 {2}", 1},
 		{"塞 3 入 i; i;", 3},
 		{"塞 5 入 i; 塞 3 入 j; i * j;", 15},
+		{`
+			塞 [1 + 2, "h" + "i"] 入 i;
+			i[0];
+		`, 3},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
 		intObj, ok := output.(*object.Integer)
 		if !ok {
-			t.Errorf("Expected object.Integer got %T", output)
+			t.Errorf("Expected object.Integer got %T (%+v)", output, output)
 		}
 		if intObj.Value != test.expected {
 			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
@@ -175,6 +179,11 @@ func TestString(t *testing.T) {
 		{`"hello world"`, "hello world"},
 		{`“塞 塞 塞”`, "塞 塞 塞"},
 		{`"hello" + " " + "world"`, "hello world"},
+		{`["hello", "world"][0]`, `"hello"`},
+		{`
+			塞 ["hello", "world"] 入 i;
+			i[1];
+		`, `"world"`},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -217,6 +226,7 @@ func TestArray(t *testing.T) {
 		{`["hello", "world"]`, `["hello", "world"]`},
 		{"[]", "[]"},
 		{`[1 + 2, "h" + "i"]`, `[3, "hi"]`},
+		{`塞 [1 + 2, "h" + "i"] 入 i; i;`, `[3, "hi"]`},
 	}
 
 	for _, test := range tests {
