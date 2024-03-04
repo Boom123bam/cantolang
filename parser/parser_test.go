@@ -402,3 +402,32 @@ func TestStringStatements(t *testing.T) {
 		}
 	}
 }
+
+func TestArrayStatements(t *testing.T) {
+	input := `
+	[1,2,3]。
+	["hello", "world"]。
+	[]
+	`
+	expected := []string{"[1, 2, 3]", `["hello", "world"]`, "[]"}
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+
+	if len(program.Statements) != 3 {
+		t.Errorf("len(program) expected 3 got %d", len(program.Statements))
+	}
+
+	for i, st := range program.Statements {
+		exprStatement, ok := st.(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
+		}
+		arr, ok := exprStatement.Expression.(*ast.ArrayLiteral)
+		if arr.String() != expected[i] {
+			t.Errorf("[%d] expected value '%s' got %s", i, expected[i], arr.String())
+		}
+	}
+}

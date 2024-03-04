@@ -1,6 +1,6 @@
 # todo
 
-- add list
+- add array
 
 # done
 

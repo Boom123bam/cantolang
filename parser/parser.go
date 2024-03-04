@@ -181,31 +181,35 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	// check for prefix
 	var left ast.Expression
-	switch {
-	case p.isPrefix(p.currentToken.TokenType):
+	if p.isPrefix(p.currentToken.TokenType) {
 		left = p.parsePrefixExpression()
-	case p.currentToken.TokenType == token.IDENTIFIER:
-		left = &ast.Identifier{Token: p.currentToken}
-	case p.currentToken.TokenType == token.OPEN_PAREN:
-		p.advance()
-		left = p.parseGroupedExpression()
-	case p.currentToken.TokenType == token.IF:
-		left = p.parseIfExpression()
-	case p.currentToken.TokenType == token.TRUE:
-		left = &ast.Boolean{Token: p.currentToken, Value: true}
-	case p.currentToken.TokenType == token.FALSE:
-		left = &ast.Boolean{Token: p.currentToken, Value: false}
-	case p.currentToken.TokenType == token.NUMBER:
-		val, err := strconv.Atoi(p.currentToken.TokenLiteral)
-		if err != nil {
-			p.Errors = append(p.Errors, fmt.Sprintf("cannot convert %s(%s) to number", p.currentToken.TokenLiteral, p.currentToken.TokenType))
-		}
-		left = &ast.IntegerLiteral{Token: p.currentToken, Value: val}
-	case p.currentToken.TokenType == token.STRING:
-		left = &ast.StringLiteral{Token: p.currentToken, Value: p.currentToken.TokenLiteral}
+	} else {
+		switch p.currentToken.TokenType {
+		case token.IDENTIFIER:
+			left = &ast.Identifier{Token: p.currentToken}
+		case token.OPEN_PAREN:
+			p.advance()
+			left = p.parseGroupedExpression()
+		case token.OPEN_BRACKET:
+			left = p.parseArray()
+		case token.IF:
+			left = p.parseIfExpression()
+		case token.TRUE:
+			left = &ast.Boolean{Token: p.currentToken, Value: true}
+		case token.FALSE:
+			left = &ast.Boolean{Token: p.currentToken, Value: false}
+		case token.NUMBER:
+			val, err := strconv.Atoi(p.currentToken.TokenLiteral)
+			if err != nil {
+				p.Errors = append(p.Errors, fmt.Sprintf("cannot convert %s(%s) to number", p.currentToken.TokenLiteral, p.currentToken.TokenType))
+			}
+			left = &ast.IntegerLiteral{Token: p.currentToken, Value: val}
+		case token.STRING:
+			left = &ast.StringLiteral{Token: p.currentToken, Value: p.currentToken.TokenLiteral}
 
-	default:
-		p.Errors = append(p.Errors, fmt.Sprintf("invalid token %s(%s)", p.currentToken.TokenLiteral, p.currentToken.TokenType))
+		default:
+			p.Errors = append(p.Errors, fmt.Sprintf("invalid token %s(%s)", p.currentToken.TokenLiteral, p.currentToken.TokenType))
+		}
 	}
 
 	for p.peekToken.TokenType != token.EOL && precedence < precedences[p.peekToken.TokenType] {
@@ -232,6 +236,23 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 		return nil
 	}
 	return ex
+}
+
+func (p *Parser) parseArray() ast.Expression {
+	arr := &ast.ArrayLiteral{Token: p.currentToken}
+	p.advance()
+	for p.currentToken.TokenType != token.CLOSE_BRACKET && p.currentToken.TokenType != token.EOF {
+		arr.Items = append(arr.Items, p.parseExpression(LOWEST))
+		p.advance()
+		if p.currentToken.TokenType == token.COMMA {
+			p.advance()
+		}
+	}
+	if p.currentToken.TokenType == token.CLOSE_BRACKET {
+		p.advance()
+		return arr
+	}
+	return nil
 }
 
 func (p *Parser) parseIfExpression() ast.Expression {

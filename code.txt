@@ -9,7 +9,7 @@ a 細D。
 啱
 錯
 
-// list
+// array
 【1，“二”， 啱】
 
 // compare

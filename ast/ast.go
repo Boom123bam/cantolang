@@ -49,6 +49,11 @@ type StringLiteral struct {
 	Value string
 }
 
+type ArrayLiteral struct {
+	Token token.Token
+	Items []Expression
+}
+
 type Boolean struct {
 	Token token.Token
 	Value bool
@@ -112,6 +117,22 @@ func (sl *StringLiteral) token() *token.Token {
 }
 func (sl *StringLiteral) String() string {
 	return `"` + sl.Token.TokenLiteral + `"`
+}
+
+func (al *ArrayLiteral) token() *token.Token {
+	return &al.Token
+}
+func (al *ArrayLiteral) String() string {
+	buff := bytes.Buffer{}
+	buff.WriteString("[")
+	for i, item := range al.Items {
+		if i != 0 {
+			buff.WriteString(", ")
+		}
+		buff.WriteString(item.String())
+	}
+	buff.WriteString("]")
+	return buff.String()
 }
 
 func (b *Boolean) token() *token.Token {
