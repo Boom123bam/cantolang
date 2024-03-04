@@ -13,6 +13,7 @@ func TestLexer(t *testing.T) {
     」
 
     a 大D。
+    【1，“二”， 啱】
 `
 
 	expectedTokens := []struct {
@@ -42,9 +43,18 @@ func TestLexer(t *testing.T) {
 		{token.IDENTIFIER, "i"},
 		{token.EOL, "。"},
 		{token.CLOSE_BRACE, "」"},
+
 		{token.IDENTIFIER, "a"},
 		{token.INCREMENT, "大D"},
 		{token.EOL, "。"},
+
+		{token.OPEN_BRACKET, "【"},
+		{token.NUMBER, "1"},
+		{token.COMMA, "，"},
+		{token.STRING, "二"},
+		{token.COMMA, "，"},
+		{token.TRUE, "啱"},
+		{token.CLOSE_BRACKET, "】"},
 		{token.EOF, ""},
 	}
 	l := New(input)
@@ -157,7 +167,7 @@ func TestFunction(t *testing.T) {
 }
 
 func TestRegularSymbols(t *testing.T) {
-	input := `(){},;+-*/`
+	input := `(){}[],;+-*/`
 
 	expectedTokens := []struct {
 		Type    string
@@ -167,6 +177,8 @@ func TestRegularSymbols(t *testing.T) {
 		{token.CLOSE_PAREN, ")"},
 		{token.OPEN_BRACE, "{"},
 		{token.CLOSE_BRACE, "}"},
+		{token.OPEN_BRACKET, "["},
+		{token.CLOSE_BRACKET, "]"},
 		{token.COMMA, ","},
 		{token.EOL, ";"},
 		{token.ADD, "+"},

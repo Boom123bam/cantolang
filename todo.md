@@ -1,9 +1,10 @@
 # todo
 
-- built in funcs
+- add list
 
 # done
 
+- built in funcs
 - string comparison
 - concatenation
 - add string

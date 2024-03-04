@@ -1,10 +1,12 @@
 package token
 
 const (
-	OPEN_PAREN  = "OPEN_PAREN"
-	CLOSE_PAREN = "CLOSE_PAREN"
-	OPEN_BRACE  = "OPEN_BRACE"
-	CLOSE_BRACE = "CLOSE_BRACE"
+	OPEN_PAREN    = "OPEN_PAREN"
+	CLOSE_PAREN   = "CLOSE_PAREN"
+	OPEN_BRACE    = "OPEN_BRACE"
+	CLOSE_BRACE   = "CLOSE_BRACE"
+	OPEN_BRACKET  = "OPEN_BRACKET"
+	CLOSE_BRACKET = "CLOSE_BRACKET"
 
 	EOL   = "EOL"
 	COMMA = "COMMA"
@@ -58,13 +60,19 @@ var symbols = map[rune]string{
 	'）': CLOSE_PAREN,
 	'「': OPEN_BRACE,
 	'」': CLOSE_BRACE,
-	'。': EOL,
-	'，': COMMA,
+	'【': OPEN_BRACKET,
+	'】': CLOSE_BRACKET,
 
 	'(': OPEN_PAREN,
 	')': CLOSE_PAREN,
 	'{': OPEN_BRACE,
 	'}': CLOSE_BRACE,
+	'[': OPEN_BRACKET,
+	']': CLOSE_BRACKET,
+
+	'。': EOL,
+	'，': COMMA,
+
 	';': EOL,
 	',': COMMA,
 
