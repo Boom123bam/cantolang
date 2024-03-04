@@ -208,3 +208,25 @@ func TestBuiltInFunction(t *testing.T) {
 		}
 	}
 }
+
+func TestArray(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`["hello", "world"]`, `["hello", "world"]`},
+		{"[]", "[]"},
+		{`[1 + 2, "h" + "i"]`, `[3, "hi"]`},
+	}
+
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		arr, ok := output.(*object.Array)
+		if !ok {
+			t.Errorf("Expected object.Array got %T (%+v)", output, output)
+		}
+		if arr.Inspect() != test.expected {
+			t.Errorf("expected %s got %s", test.expected, arr.Inspect())
+		}
+	}
+}

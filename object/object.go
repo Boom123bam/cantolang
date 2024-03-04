@@ -15,6 +15,7 @@ var (
 	//types
 	INT_OBJ      = "INT_OBJ"
 	STRING_OBJ   = "STRING_OBJ"
+	ARRAY_OBJ    = "ARRAY_OBJ"
 	NULL_OBJ     = "NULL_OBJ"
 	BOOL_OBJ     = "BOOL_OBJ"
 	ERROR_OBJ    = "ERROR_OBJ"
@@ -36,6 +37,10 @@ type Integer struct {
 
 type String struct {
 	Value string
+}
+
+type Array struct {
+	Items []Object
 }
 
 type Boolean struct {
@@ -71,10 +76,26 @@ func (i *Integer) Type() string {
 }
 
 func (s *String) Inspect() string {
-	return s.Value
+	return `"` + s.Value + `"`
 }
 func (s *String) Type() string {
 	return STRING_OBJ
+}
+
+func (a *Array) Inspect() string {
+	b := bytes.Buffer{}
+	b.WriteString("[")
+	for i, item := range a.Items {
+		if i != 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(item.Inspect())
+	}
+	b.WriteString("]")
+	return b.String()
+}
+func (a *Array) Type() string {
+	return ARRAY_OBJ
 }
 
 func (b *Boolean) Inspect() string {

@@ -249,7 +249,6 @@ func (p *Parser) parseArray() ast.Expression {
 		}
 	}
 	if p.currentToken.TokenType == token.CLOSE_BRACKET {
-		p.advance()
 		return arr
 	}
 	return nil

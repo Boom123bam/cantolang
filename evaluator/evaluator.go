@@ -65,6 +65,16 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		return &object.Integer{Value: expression.Value}
 	case *ast.StringLiteral:
 		return &object.String{Value: expression.Value}
+	case *ast.ArrayLiteral:
+		arr := &object.Array{}
+		for _, item := range expression.Items {
+			res := Eval(item, env)
+			if object.ERROR.Message != "" {
+				return object.ERROR
+			}
+			arr.Items = append(arr.Items, res)
+		}
+		return arr
 	case *ast.Boolean:
 		return getBoolObj(expression.Value)
 	case *ast.PrefixExpression:
