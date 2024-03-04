@@ -1,9 +1,11 @@
 # todo
 
-- add indexing
+- add in/decrement
+- add loop
 
 # done
 
+- add indexing
 - add array
 - built in funcs
 - string comparison

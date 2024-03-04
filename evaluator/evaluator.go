@@ -75,6 +75,24 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 			arr.Items = append(arr.Items, res)
 		}
 		return arr
+	case *ast.IndexExpression:
+		idx, ok := expression.Index.(*ast.IntegerLiteral)
+		if !ok {
+			return Errorf("type error", "index must be number")
+		}
+		left := Eval(expression.Left, env)
+		if object.ERROR.Message != "" {
+			return object.ERROR
+		}
+		switch left := left.(type) {
+		case *object.Array:
+			return left.Items[idx.Value]
+		case *object.String:
+			return &object.String{Value: string([]rune(left.Value)[idx.Value])}
+
+		default:
+			return Errorf("type error", "cannot index %s", left.Type())
+		}
 	case *ast.Boolean:
 		return getBoolObj(expression.Value)
 	case *ast.PrefixExpression:

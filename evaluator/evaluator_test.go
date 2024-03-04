@@ -179,11 +179,12 @@ func TestString(t *testing.T) {
 		{`"hello world"`, "hello world"},
 		{`“塞 塞 塞”`, "塞 塞 塞"},
 		{`"hello" + " " + "world"`, "hello world"},
-		{`["hello", "world"][0]`, `"hello"`},
+		{`["hello", "world"][0]`, "hello"},
 		{`
 			塞 ["hello", "world"] 入 i;
 			i[1];
-		`, `"world"`},
+		`, "world"},
+		{`"hello"[1]`, "e"},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
