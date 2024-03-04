@@ -36,3 +36,9 @@ a 或者 b
 聽到 add（x，y） 嘅話，就「
     俾我 x + y。
 」
+
+// builtin funcitons
+// len()
+有幾長（“hello”）// 5
+// print()
+講（“OK”）

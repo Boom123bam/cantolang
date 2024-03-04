@@ -84,6 +84,7 @@ func TestError(t *testing.T) {
 		{"啱 大過 錯", "invalid comparison"},
 		{"啱 大過 錯 + 錯", "invalid operation"},
 		{"如果 (啱 大過 錯) 嘅話，就 {2} 唔係就 {3}", "invalid comparison"},
+		{`有幾長（2）`, "invalid argument type"},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -183,6 +184,27 @@ func TestString(t *testing.T) {
 		}
 		if strObj.Value != test.expected {
 			t.Errorf("expected %s got %+v (type %T)", test.expected, strObj.Value, strObj.Value)
+		}
+	}
+}
+
+func TestBuiltInFunction(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`
+		有幾長（"hello"）
+		`, 5},
+	}
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		intObj, ok := output.(*object.Integer)
+		if !ok {
+			t.Errorf("Expected object.Integer got %T (%+v)", output, output)
+		}
+		if intObj.Value != test.expected {
+			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
 		}
 	}
 }

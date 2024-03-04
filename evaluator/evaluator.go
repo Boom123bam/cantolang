@@ -87,19 +87,28 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		}
 		return object.NULL
 	case *ast.FunctionCallExpression:
-		obj, ok := env.Get(expression.Identifier.Token.TokenLiteral)
-		if !ok {
-			return errorf("undefined variable", "%s is used before assignment", expression.Identifier.Token.TokenLiteral)
+		if obj, ok := env.Get(expression.Identifier.Token.TokenLiteral); ok {
+			function, ok := obj.(*object.Function)
+			if !ok {
+				return Errorf("type error", "%s expected function type got %T", expression.Identifier.Token.TokenLiteral, obj)
+			}
+			childEnv := object.NewEnvironment(env)
+			for i, p := range function.Parameters {
+				childEnv.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i], childEnv))
+			}
+			return Eval(function.Body, childEnv)
+		} else if builtin, ok := Builtins[expression.Identifier.Token.TokenLiteral]; ok {
+			params := []object.Object{}
+			for _, param := range expression.Parameters {
+				res := Eval(param, env)
+				if res.Type() == object.ERROR_OBJ {
+					return res
+				}
+				params = append(params, res)
+			}
+			return builtin(params...)
 		}
-		function, ok := obj.(*object.Function)
-		if !ok {
-			return errorf("type error", "%s expected function type got %T", expression.Identifier.Token.TokenLiteral, obj)
-		}
-		childEnv := object.NewEnvironment(env)
-		for i, p := range function.Parameters {
-			childEnv.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i], childEnv))
-		}
-		return Eval(function.Body, childEnv)
+		return Errorf("undefined variable", "%s is used before assignment", expression.Identifier.Token.TokenLiteral)
 
 	default:
 		return object.NULL
@@ -124,7 +133,7 @@ func evalInfixExpression(left object.Object, right object.Object, infix token.To
 		return object.ERROR
 	}
 	if left.Type() != right.Type() {
-		return errorf("type mismatch", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("type mismatch", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	}
 	lInt, l_ok := left.(*object.Integer)
 	rInt, r_ok := right.(*object.Integer)
@@ -136,32 +145,32 @@ func evalInfixExpression(left object.Object, right object.Object, infix token.To
 		if left.Type() == object.STRING_OBJ {
 			return &object.String{Value: left.(*object.String).Value + right.(*object.String).Value}
 		}
-		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MINUS:
 		if l_ok && r_ok {
 			return &object.Integer{Value: lInt.Value - rInt.Value}
 		}
-		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.MULTIPLY:
 		if l_ok && r_ok {
 			return &object.Integer{Value: lInt.Value * rInt.Value}
 		}
-		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.DIVIDE:
 		if l_ok && r_ok {
 			return &object.Integer{Value: lInt.Value / rInt.Value}
 		}
-		return errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid operation", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.LESS_THAN:
 		if l_ok && r_ok {
 			return getBoolObj(lInt.Value < rInt.Value)
 		}
-		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.GREATER_THAN:
 		if l_ok && r_ok {
 			return getBoolObj(lInt.Value > rInt.Value)
 		}
-		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	case token.EQUAL_TO:
 		if l_ok && r_ok {
 			return getBoolObj(lInt.Value == rInt.Value)
@@ -172,10 +181,10 @@ func evalInfixExpression(left object.Object, right object.Object, infix token.To
 		if left.Type() == object.BOOL_OBJ {
 			return getBoolObj(left == right)
 		}
-		return errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+		return Errorf("invalid comparison", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 	}
 	// invalid infix
-	return errorf("invalid infix", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
+	return Errorf("invalid infix", "%T (%+v) %s %T (%+v)", left, left, infix.TokenLiteral, right, right)
 }
 
 func evalPrefixExpression(tokenType string, right object.Object) object.Object {
@@ -183,13 +192,13 @@ func evalPrefixExpression(tokenType string, right object.Object) object.Object {
 	case token.MINUS:
 		rightInt, ok := right.(*object.Integer)
 		if !ok {
-			return errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
+			return Errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
 		}
 		return &object.Integer{Value: -rightInt.Value}
 	case token.NOT:
 		rightBool, ok := right.(*object.Boolean)
 		if !ok {
-			return errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
+			return Errorf("invalid prefix", "%s %T (%+v)", tokenType, right, right)
 		}
 		return getBoolObj(!rightBool.Value)
 	default:
@@ -204,7 +213,7 @@ func getBoolObj(b bool) *object.Boolean {
 	return object.FALSE
 }
 
-func errorf(message, descrigtionFormat string, a ...interface{}) *object.Error {
+func Errorf(message, descrigtionFormat string, a ...interface{}) *object.Error {
 	object.ERROR.Message = message
 	object.ERROR.Description = fmt.Sprintf(descrigtionFormat, a...)
 	return object.ERROR

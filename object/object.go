@@ -20,12 +20,15 @@ var (
 	ERROR_OBJ    = "ERROR_OBJ"
 	FUNCTION_OBJ = "FUNCTION_OBJ"
 	RETURN_OBJ   = "RETURN_OBJ"
+	BUILTIN_OBJ  = "BUILTIN_OBJ"
 )
 
 type Object interface {
 	Inspect() string
 	Type() string
 }
+
+type BuiltInFunction func(args ...Object) Object
 
 type Integer struct {
 	Value int
@@ -50,6 +53,10 @@ type Error struct {
 type Function struct {
 	Parameters []ast.Identifier
 	Body       *ast.BlockStatement
+}
+
+type BuiltIn struct {
+	Fn BuiltInFunction
 }
 
 type ReturnValue struct {
@@ -107,6 +114,13 @@ func (f *Function) Inspect() string {
 }
 func (f *Function) Type() string {
 	return FUNCTION_OBJ
+}
+
+func (f *BuiltIn) Inspect() string {
+	return "builtin function"
+}
+func (f *BuiltIn) Type() string {
+	return BUILTIN_OBJ
 }
 
 func (r *ReturnValue) Inspect() string {
