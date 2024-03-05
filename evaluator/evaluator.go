@@ -86,8 +86,14 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		}
 		switch left := left.(type) {
 		case *object.Array:
+			if idx.Value < 0 || idx.Value >= len(left.Items) {
+				return Errorf("index error", "list index out of range")
+			}
 			return left.Items[idx.Value]
 		case *object.String:
+			if idx.Value < 0 || idx.Value >= len(left.Value) {
+				return Errorf("index error", "string index out of range")
+			}
 			return &object.String{Value: string([]rune(left.Value)[idx.Value])}
 
 		default:

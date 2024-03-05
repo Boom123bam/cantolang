@@ -31,6 +31,7 @@ func TestInteger(t *testing.T) {
 			塞 [1 + 2, "h" + "i"] 入 i;
 			i[0];
 		`, 3},
+		{"[1,2,3][2]", 3},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
@@ -89,6 +90,7 @@ func TestError(t *testing.T) {
 		{"啱 大過 錯 + 錯", "invalid operation"},
 		{"如果 (啱 大過 錯) 嘅話，就 {2} 唔係就 {3}", "invalid comparison"},
 		{`有幾長（2）`, "invalid argument type"},
+		{`"hi"[2]`, "index error"},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
