@@ -1,5 +1,6 @@
 # todo
 
+- add array len() support
 - add in/decrement
 - add loop
 

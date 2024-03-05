@@ -205,9 +205,10 @@ func TestBuiltInFunction(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{`
-		有幾長（"hello"）
-		`, 5},
+		{`有幾長（"hello"）`, 5},
+		{`有幾長（""）`, 0},
+		{`有幾長（[1,2,3]）`, 3},
+		{`有幾長（[]）`, 0},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
