@@ -27,6 +27,7 @@ func TestInteger(t *testing.T) {
 		{"如果 (2 細過 3) 嘅話，就 {1} 唔係就 {2}", 1},
 		{"塞 3 入 i; i;", 3},
 		{"塞 5 入 i; 塞 3 入 j; i * j;", 15},
+		{"塞 5 入 i; 塞 i + 1 入 i; i;", 6},
 		{`
 			塞 [1 + 2, "h" + "i"] 入 i;
 			i[0];
@@ -241,6 +242,36 @@ func TestArray(t *testing.T) {
 		}
 		if arr.Inspect() != test.expected {
 			t.Errorf("expected %s got %s", test.expected, arr.Inspect())
+		}
+	}
+}
+
+func TestWhileLoop(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int
+	}{
+		{`
+		塞 0 入 i。
+		當 （i 細過 8） 時，就「
+		    塞 i+1 入 i。
+		」
+		i;`, 8},
+		{`
+		塞 0 入 i。
+		當 （i 細過 -1） 時，就「
+		    塞 i+1 入 i。
+		」
+		i;`, 0},
+	}
+	for _, test := range tests {
+		output := testEval(t, test.input)
+		intObj, ok := output.(*object.Integer)
+		if !ok {
+			t.Errorf("Expected object.Integer got %T (%+v)", output, output)
+		}
+		if intObj.Value != test.expected {
+			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
 		}
 	}
 }

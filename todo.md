@@ -1,11 +1,11 @@
 # todo
 
-- add loop
 - add print
 - add in/decrement
 
 # done
 
+- add loop
 - add array len() support
 - add indexing
 - add array

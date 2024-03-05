@@ -114,6 +114,15 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 			return Eval(expression.Consequence, env)
 		}
 		return Eval(expression.Alternative, env)
+	case *ast.WhileLoop:
+		condition := Eval(expression.Condition, env)
+		var result object.Object
+		result = object.NULL
+		for isTruthy(condition) {
+			result = Eval(expression.Body, env)
+			condition = Eval(expression.Condition, env)
+		}
+		return result
 	case *ast.Identifier:
 		val, ok := env.Get(expression.Token.TokenLiteral)
 		if ok {
