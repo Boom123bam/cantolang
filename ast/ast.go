@@ -99,6 +99,12 @@ type IfExpression struct {
 	Alternative *BlockStatement
 }
 
+type WhileLoop struct {
+	Token     token.Token
+	Condition Expression
+	Body      *BlockStatement
+}
+
 type BlockStatement struct {
 	Statements []Statement
 }
@@ -242,4 +248,15 @@ func (rs *ReturnStatement) String() string {
 
 func (es *ExpressionStatement) String() string {
 	return es.Expression.String()
+}
+
+func (wl *WhileLoop) token() *token.Token {
+	return &wl.Token
+}
+func (wl *WhileLoop) String() string {
+	buff := bytes.Buffer{}
+	buff.WriteString("while")
+	buff.WriteString(wl.Condition.String())
+	buff.WriteString(wl.Body.String())
+	return buff.String()
 }

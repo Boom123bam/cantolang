@@ -77,6 +77,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		s = p.parseAssignStatement()
 	case token.FUNCTION:
 		s = p.parseFunctionDefStatement()
+	case token.WHILE:
+		s = p.parseWhileLoop()
 	default:
 		s = p.parseExpressionStatement()
 	}
@@ -105,6 +107,36 @@ func (p *Parser) parseAssignStatement() *ast.AssignStatement {
 		p.advance()
 	}
 	return statement
+}
+
+func (p *Parser) parseWhileLoop() *ast.WhileLoop {
+	loop := &ast.WhileLoop{Token: p.currentToken}
+	if !p.expectPeek(token.OPEN_PAREN) {
+		return nil
+	}
+	p.advance()
+	loop.Condition = p.parseExpression(LOWEST)
+	if !p.expectPeek(token.CLOSE_PAREN) {
+		return nil
+	}
+	if !p.expectPeek(token.SI) {
+		return nil
+	}
+	if !p.expectPeek(token.COMMA) {
+		return nil
+	}
+	if !p.expectPeek(token.THEN) {
+		return nil
+	}
+	if !p.expectPeek(token.OPEN_BRACE) {
+		return nil
+	}
+	p.advance()
+	loop.Body = p.parseBlockStatement()
+	if p.peekToken.TokenType == token.EOL {
+		p.advance()
+	}
+	return loop
 }
 
 func (p *Parser) parseFunctionDefStatement() *ast.FunctionDefStatment {

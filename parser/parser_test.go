@@ -465,3 +465,42 @@ func TestIndexStatements(t *testing.T) {
 
 	}
 }
+
+func TestWhileLoop(t *testing.T) {
+	input := `
+	當 （i 細過 8） 時，就「
+	    塞 i+1 入 i。
+    」`
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	}
+
+	loop, ok := program.Statements[0].(*ast.WhileLoop)
+	if !ok {
+		t.Errorf("expected WhileLoop got %T", program.Statements[0])
+	}
+
+	if loop.Condition.String() != "(i 細過 8)" {
+		t.Errorf("expected condition '(i 細過 8)' got %s", loop.Condition.String())
+	}
+
+	if len(loop.Body.Statements) != 1 {
+		t.Errorf("expected 1 consq statement got %d", len(loop.Body.Statements))
+	}
+
+	body, ok := loop.Body.Statements[0].(*ast.AssignStatement)
+	if !ok {
+		t.Errorf("body not expressionStatement got %T", loop.Body.Statements[0])
+	}
+
+	if body.String() != "塞(i + 1)-> i" {
+		t.Errorf("cons.string() expected '塞(i + 1)-> i' got '%s'", body.String())
+	}
+
+}
