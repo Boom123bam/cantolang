@@ -1,10 +1,10 @@
 # todo
 
-- add print
 - add in/decrement
 
 # done
 
+- add print
 - add loop
 - add array len() support
 - add indexing

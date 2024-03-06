@@ -504,3 +504,35 @@ func TestWhileLoop(t *testing.T) {
 	}
 
 }
+
+func TestIncrement(t *testing.T) {
+	input := `
+	i 大D
+	a 細D
+    `
+
+	l := lexer.New(input)
+	p := New(l)
+	// p.ParseProgram()
+	program := p.ParseProgram()
+	checkParserErrors(p, t)
+	if len(program.Statements) != 2 {
+		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.IncrementStatement)
+	if !ok {
+		t.Errorf("expected IncrementStatement got %T", program.Statements[0])
+	}
+	if stmt.Identifier != "i" {
+		t.Errorf("expected Identifier 'i' got %s", stmt.Identifier)
+	}
+
+	stmt2, ok := program.Statements[1].(*ast.DecrementStatement)
+	if !ok {
+		t.Errorf("expected DecrementStatement got %T", program.Statements[1])
+	}
+	if stmt2.Identifier != "a" {
+		t.Errorf("expected Identifier 'a' got %s", stmt.Identifier)
+	}
+}
