@@ -166,19 +166,38 @@ func TestFunction(t *testing.T) {
 		`, 10},
 		{`
 		聽到 one（） 嘅話，就「
-		     1。
+		     俾我 1。
+		」;
+		one();
+		`, 1},
+		{`
+		聽到 one（） 嘅話，就「
+			如果 (啱) 嘅話，就 {俾我 1};
+		」;
+		one();
+		`, 1},
+		{`
+		聽到 one（） 嘅話，就「
+			如果 (啱) 嘅話，就 {俾我 1};
+		    俾我 2;
+		」;
+		one();
+		`, 1},
+		{`
+		聽到 one（） 嘅話，就「
+			當 (啱) 時，就 {俾我 1};
 		」;
 		one();
 		`, 1},
 	}
-	for _, test := range tests {
+	for i, test := range tests {
 		output := testEval(t, test.input)
 		intObj, ok := output.(*object.Integer)
 		if !ok {
-			t.Errorf("Expected object.Integer got %T", output)
+			t.Errorf("[%d] Expected object.Integer got %T", i, output)
 		}
 		if intObj.Value != test.expected {
-			t.Errorf("expected %d got %+v (type %T)", test.expected, intObj.Value, intObj.Value)
+			t.Errorf("[%d] Expected %d got %+v (type %T)", i, test.expected, intObj.Value, intObj.Value)
 		}
 	}
 }

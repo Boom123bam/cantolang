@@ -12,13 +12,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Program:
 		object.ERROR.Message = ""
 		object.ERROR.Description = ""
-		return EvalProgram(node.Statements, env)
+		return EvalStatements(node.Statements, env, true)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
 	case ast.Expression:
 		return EvalExpression(node, env)
-	case *ast.BlockStatement:
-		return EvalProgram(node.Statements, env)
 	case *ast.AssignStatement:
 		return EvalAssignStatement(node, env)
 	case *ast.FunctionDefStatment:
@@ -58,12 +56,15 @@ func EvalAssignStatement(statement *ast.AssignStatement, env *object.Environment
 	return val
 }
 
-func EvalProgram(statements []ast.Statement, env *object.Environment) object.Object {
+func EvalStatements(statements []ast.Statement, env *object.Environment, unwrapReturn bool) object.Object {
 	var result object.Object
 	for _, statement := range statements {
 		result = Eval(statement, env)
 		if result.Type() == object.RETURN_OBJ {
-			return result.(*object.ReturnValue).Value
+			if unwrapReturn {
+				return result.(*object.ReturnValue).Value
+			}
+			return result
 		}
 		if object.ERROR.Message != "" {
 			return object.ERROR
@@ -131,15 +132,18 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 	case *ast.IfExpression:
 		condition := Eval(expression.Condition, env)
 		if isTruthy(condition) {
-			return Eval(expression.Consequence, env)
+			return EvalStatements(expression.Consequence.Statements, env, false)
 		}
-		return Eval(expression.Alternative, env)
+		return EvalStatements(expression.Alternative.Statements, env, false)
 	case *ast.WhileLoop:
 		condition := Eval(expression.Condition, env)
 		var result object.Object
 		result = object.NULL
 		for isTruthy(condition) {
-			result = Eval(expression.Body, env)
+			result = EvalStatements(expression.Body.Statements, env, false)
+			if result.Type() == object.RETURN_OBJ {
+				return result
+			}
 			condition = Eval(expression.Condition, env)
 		}
 		return result
@@ -159,7 +163,7 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 			for i, p := range function.Parameters {
 				childEnv.Set(p.Token.TokenLiteral, Eval(expression.Parameters[i], childEnv))
 			}
-			return Eval(function.Body, childEnv)
+			return EvalStatements(function.Body.Statements, childEnv, true)
 		} else if builtin, ok := Builtins[expression.Identifier.Token.TokenLiteral]; ok {
 			params := []object.Object{}
 			for _, param := range expression.Parameters {

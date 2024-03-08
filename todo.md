@@ -2,6 +2,7 @@
 
 # done
 
+- fix eval block statement return
 - add in/decrement
 - add print
 - add loop
