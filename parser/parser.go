@@ -198,8 +198,11 @@ func (p *Parser) parseParams() []ast.Identifier {
 		p.advance()
 		i := ast.Identifier{Token: p.currentToken}
 		params = append(params, i)
-		p.advance()
+		if p.peekToken.TokenType == token.COMMA {
+			p.advance()
+		}
 	}
+	p.advance()
 	if p.currentToken.TokenType != token.CLOSE_PAREN {
 		return nil
 	}
@@ -209,6 +212,7 @@ func (p *Parser) parseParams() []ast.Identifier {
 func (p *Parser) parseCallParams() []ast.Expression {
 	params := []ast.Expression{}
 	if p.peekToken.TokenType == token.CLOSE_PAREN {
+		p.advance()
 		return params
 	}
 	p.advance()

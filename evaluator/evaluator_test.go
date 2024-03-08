@@ -164,6 +164,12 @@ func TestFunction(t *testing.T) {
 		」;
 		sum(1, sum(2, sum(3, 4)));
 		`, 10},
+		{`
+		聽到 one（） 嘅話，就「
+		     1。
+		」;
+		one();
+		`, 1},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)

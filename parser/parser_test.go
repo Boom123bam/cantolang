@@ -304,51 +304,71 @@ func TestReturnStatement(t *testing.T) {
 }
 
 func TestFunctionDef(t *testing.T) {
-	input := `聽到 add（x，y） 嘅話，就「
-	    俾我 x + y。
-	」`
-
-	l := lexer.New(input)
-	p := New(l)
-	program := p.ParseProgram()
-	checkParserErrors(p, t)
-	if len(program.Statements) != 1 {
-		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`聽到 add（x，y） 嘅話，就「
+			    俾我 x + y。
+			」`, "聽到 add(x,y) {俾我(x + y)}",
+		},
+		{`聽到 one（） 嘅話，就「
+			    俾我 1。
+			」`, "聽到 one() {俾我1}",
+		},
 	}
+	for _, test := range tests {
+		l := lexer.New(test.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(p, t)
+		if len(program.Statements) != 1 {
+			t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+		}
 
-	fd, ok := program.Statements[0].(*ast.FunctionDefStatment)
-	if !ok {
-		t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
-	}
+		fd, ok := program.Statements[0].(*ast.FunctionDefStatment)
+		if !ok {
+			t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
+		}
 
-	if fd.String() != "聽到 add(x,y) {俾我(x + y)}" {
-		t.Errorf("expected 聽到 add(x,y) {俾我(x + y)} got %s", fd.String())
+		if fd.String() != test.expected {
+			t.Errorf("expected %s got %s", test.expected, fd.String())
+		}
+
 	}
 
 }
 
 func TestFunctionCall(t *testing.T) {
-	input := `add（x，y）`
-
-	l := lexer.New(input)
-	p := New(l)
-	program := p.ParseProgram()
-	checkParserErrors(p, t)
-	if len(program.Statements) != 1 {
-		t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`add（x，y）`, "add"},
+		{`one（）`, "one"},
 	}
 
-	es, ok := program.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
-	}
+	for _, test := range tests {
+		l := lexer.New(test.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(p, t)
+		if len(program.Statements) != 1 {
+			t.Errorf("len(program) expected 1 got %d", len(program.Statements))
+		}
 
-	fce, ok := es.Expression.(*ast.FunctionCallExpression)
-	if !ok {
-		t.Errorf("expected FunctionCallExpression got %T", es.Expression)
-	}
-	if fce.Identifier.String() != "add" {
-		t.Errorf("expected add got %s", fce.Identifier.String())
+		es, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Errorf("expected FunctionDefStatement got %T", program.Statements[0])
+		}
+
+		fce, ok := es.Expression.(*ast.FunctionCallExpression)
+		if !ok {
+			t.Errorf("expected FunctionCallExpression got %T", es.Expression)
+		}
+		if fce.Identifier.String() != test.expected {
+			t.Errorf("expected add got %s", fce.Identifier.String())
+		}
 	}
 
 }
