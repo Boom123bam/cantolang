@@ -76,11 +76,6 @@ var symbols = map[rune]string{
 	';': EOL,
 	',': COMMA,
 
-	'加': ADD,
-	'減': MINUS,
-	'乘': MULTIPLY,
-	'除': DIVIDE,
-
 	'+': ADD,
 	'-': MINUS,
 	'*': MULTIPLY,
@@ -108,6 +103,11 @@ var keywords = map[string]string{
 	"俾我":  RETURN,
 	"啱":   TRUE,
 	"錯":   FALSE,
+
+	"加": ADD,
+	"減": MINUS,
+	"乘": MULTIPLY,
+	"除": DIVIDE,
 }
 
 func LookUpSymbol(symbol rune) string {

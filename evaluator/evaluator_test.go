@@ -238,6 +238,9 @@ func TestBuiltInFunction(t *testing.T) {
 		{`有幾長（""）`, 0},
 		{`有幾長（[1,2,3]）`, 3},
 		{`有幾長（[]）`, 0},
+		{`加上([1],2,3)[0]`, 1},
+		{`加上([1],2,3)[1]`, 2},
+		{`加上([1],2,3)[2]`, 3},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)

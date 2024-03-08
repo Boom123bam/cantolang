@@ -99,6 +99,8 @@ a 或者 b
 有幾長（“hello”）// 5
 // print
 講（“OK”）// prints OK
+// append
+加上（【1，2】，3）// [1, 2, 3]
 ```
 
 ## Features
