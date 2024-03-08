@@ -76,7 +76,7 @@ func (i *Integer) Type() string {
 }
 
 func (s *String) Inspect() string {
-	return `"` + s.Value + `"`
+	return s.Value
 }
 func (s *String) Type() string {
 	return STRING_OBJ
