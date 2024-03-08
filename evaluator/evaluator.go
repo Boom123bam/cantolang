@@ -58,6 +58,7 @@ func EvalAssignStatement(statement *ast.AssignStatement, env *object.Environment
 
 func EvalStatements(statements []ast.Statement, env *object.Environment, unwrapReturn bool) object.Object {
 	var result object.Object
+	result = object.NULL
 	for _, statement := range statements {
 		result = Eval(statement, env)
 		if result.Type() == object.RETURN_OBJ {
@@ -134,7 +135,10 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		if isTruthy(condition) {
 			return EvalStatements(expression.Consequence.Statements, env, false)
 		}
-		return EvalStatements(expression.Alternative.Statements, env, false)
+		if expression.Alternative != nil {
+			return EvalStatements(expression.Alternative.Statements, env, false)
+		}
+		return object.NULL
 	case *ast.WhileLoop:
 		condition := Eval(expression.Condition, env)
 		var result object.Object
