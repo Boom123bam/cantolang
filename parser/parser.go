@@ -59,7 +59,7 @@ func (p *Parser) advance() {
 func (p *Parser) expectPeek(expectedTokenType string) bool {
 	p.advance()
 	if p.currentToken.TokenType != expectedTokenType {
-		p.Errors = append(p.Errors, fmt.Sprintf("expected %s got %s", expectedTokenType, p.currentToken.TokenType))
+		p.Errors = append(p.Errors, fmt.Sprintf("expected %s got %s (%s)", expectedTokenType, p.currentToken.TokenType, p.currentToken.TokenLiteral))
 		return false
 	}
 	return true

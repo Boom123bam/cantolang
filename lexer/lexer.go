@@ -66,7 +66,7 @@ func isAllowedInIdent(char rune) bool {
 	if char == 0 {
 		return false
 	}
-	restricted := []rune(" \n1234567890!@#$%^&")
+	restricted := []rune(" \n1234567890!@#$%^&<>=")
 	for _, c := range restricted {
 		if c == char {
 			return false
