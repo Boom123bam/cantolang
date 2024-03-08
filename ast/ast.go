@@ -39,14 +39,10 @@ type ExpressionStatement struct {
 	Expression Expression
 }
 
-type IncrementStatement struct {
-	Token      token.Token
-	Identifier string
-}
-
-type DecrementStatement struct {
-	Token      token.Token
-	Identifier string
+type IncrementDecrementStatement struct {
+	Token       token.Token
+	Identifier  string
+	IsIncrement bool
 }
 
 type IntegerLiteral struct {
@@ -260,12 +256,11 @@ func (es *ExpressionStatement) String() string {
 	return es.Expression.String()
 }
 
-func (is *IncrementStatement) String() string {
-	return is.Identifier + "++"
-}
-
-func (ds *DecrementStatement) String() string {
-	return ds.Identifier + "--"
+func (is *IncrementDecrementStatement) String() string {
+	if is.IsIncrement {
+		return is.Identifier + "++"
+	}
+	return is.Identifier + "--"
 }
 
 func (wl *WhileLoop) token() *token.Token {

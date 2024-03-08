@@ -507,8 +507,8 @@ func TestWhileLoop(t *testing.T) {
 
 func TestIncrement(t *testing.T) {
 	input := `
-	i 大D
-	a 細D
+	i 大D;
+	a 細D;
     `
 
 	l := lexer.New(input)
@@ -520,19 +520,25 @@ func TestIncrement(t *testing.T) {
 		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
 	}
 
-	stmt, ok := program.Statements[0].(*ast.IncrementStatement)
+	stmt, ok := program.Statements[0].(*ast.IncrementDecrementStatement)
 	if !ok {
-		t.Errorf("expected IncrementStatement got %T", program.Statements[0])
+		t.Errorf("expected IncrementDecrementStatement got %T", program.Statements[0])
 	}
 	if stmt.Identifier != "i" {
 		t.Errorf("expected Identifier 'i' got %s", stmt.Identifier)
 	}
+	if !stmt.IsIncrement {
+		t.Errorf("stmt is not increment")
+	}
 
-	stmt2, ok := program.Statements[1].(*ast.DecrementStatement)
+	stmt2, ok := program.Statements[1].(*ast.IncrementDecrementStatement)
 	if !ok {
-		t.Errorf("expected DecrementStatement got %T", program.Statements[1])
+		t.Errorf("expected IncrementDecrementStatement got %T", program.Statements[1])
 	}
 	if stmt2.Identifier != "a" {
 		t.Errorf("expected Identifier 'a' got %s", stmt.Identifier)
+	}
+	if stmt2.IsIncrement {
+		t.Errorf("stmt is not decrement")
 	}
 }

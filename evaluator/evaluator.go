@@ -25,6 +25,22 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return EvalFunctionDefStatement(node, env)
 	case *ast.ReturnStatement:
 		return &object.ReturnValue{Value: Eval(node.Expression, env)}
+	case *ast.IncrementDecrementStatement:
+		val, ok := env.Get(node.Identifier)
+		if !ok {
+			return Errorf("undefined variable", "%s is used before assignment", node.Identifier)
+		}
+		switch val := val.(type) {
+		case *object.Integer:
+			if node.IsIncrement {
+				env.Set(node.Identifier, &object.Integer{Value: val.Value + 1})
+			} else {
+				env.Set(node.Identifier, &object.Integer{Value: val.Value - 1})
+			}
+			return object.NULL
+		default:
+			return Errorf("type error", "cannot increment %s", val.Type())
+		}
 	default:
 		return object.NULL
 	}

@@ -1,9 +1,8 @@
 # todo
 
-- add in/decrement
-
 # done
 
+- add in/decrement
 - add print
 - add loop
 - add array len() support

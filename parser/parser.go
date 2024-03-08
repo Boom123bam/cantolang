@@ -83,10 +83,20 @@ func (p *Parser) ParseStatement() ast.Statement {
 		// check for in/decrement
 		switch p.peekToken.TokenType {
 		case token.INCREMENT:
-			s = &ast.IncrementStatement{Token: p.currentToken, Identifier: p.currentToken.TokenLiteral}
+			s = &ast.IncrementDecrementStatement{
+				Token:       p.currentToken,
+				Identifier:  p.currentToken.TokenLiteral,
+				IsIncrement: true,
+			}
+			p.advance()
 			p.advance()
 		case token.DECREMENT:
-			s = &ast.DecrementStatement{Token: p.currentToken, Identifier: p.currentToken.TokenLiteral}
+			s = &ast.IncrementDecrementStatement{
+				Token:       p.currentToken,
+				Identifier:  p.currentToken.TokenLiteral,
+				IsIncrement: false,
+			}
+			p.advance()
 			p.advance()
 		default:
 			s = p.parseExpressionStatement()

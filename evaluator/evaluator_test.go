@@ -33,6 +33,8 @@ func TestInteger(t *testing.T) {
 			i[0];
 		`, 3},
 		{"[1,2,3][2]", 3},
+		{"塞 3 入 i; i 大D; i;", 4},
+		{"塞 3 入 i; i 細D; i;", 2},
 	}
 	for _, test := range tests {
 		output := testEval(t, test.input)
