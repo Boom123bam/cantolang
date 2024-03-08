@@ -231,10 +231,10 @@ func TestArray(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{`["hello", "world"]`, `["hello", "world"]`},
+		{`["hello", "world"]`, `[hello, world]`},
 		{"[]", "[]"},
-		{`[1 + 2, "h" + "i"]`, `[3, "hi"]`},
-		{`塞 [1 + 2, "h" + "i"] 入 i; i;`, `[3, "hi"]`},
+		{`[1 + 2, "h" + "i"]`, `[3, hi]`},
+		{`塞 [1 + 2, "h" + "i"] 入 i; i;`, `[3, hi]`},
 	}
 
 	for _, test := range tests {
