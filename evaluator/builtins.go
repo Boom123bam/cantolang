@@ -27,7 +27,7 @@ var Builtins = map[string]object.BuiltInFunction{
 		for _, arg := range args {
 			buff.WriteString(arg.Inspect() + " ")
 		}
-		fmt.Print(buff.String())
+		fmt.Println(buff.String())
 		return object.NULL
 	},
 	"加上": func(args ...object.Object) object.Object {
