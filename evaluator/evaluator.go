@@ -145,6 +145,9 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		result = object.NULL
 		for isTruthy(condition) {
 			result = EvalStatements(expression.Body.Statements, env, false)
+			if object.ERROR.Message != "" {
+				return object.ERROR
+			}
 			if result.Type() == object.RETURN_OBJ {
 				return result
 			}
