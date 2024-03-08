@@ -27,7 +27,7 @@ var Builtins = map[string]object.BuiltInFunction{
 		for _, arg := range args {
 			buff.WriteString(arg.Inspect() + " ")
 		}
-		fmt.Println(buff.String())
+		fmt.Print(buff.String())
 		return object.NULL
 	},
 }
