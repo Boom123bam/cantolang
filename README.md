@@ -9,7 +9,7 @@ Cantolang is currently an interpreted language using a tree walking interpreter.
 To run an external file:
 
 ```
-go run main.go input.txt
+go run main.go example.txt
 ```
 
 To run REPL:
