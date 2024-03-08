@@ -26,7 +26,17 @@ func main() {
 		l := lexer.New(input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		evaluator.Eval(program, object.NewEnvironment(nil))
+		if len(p.Errors) > 0 {
+			fmt.Printf("Got %d parser errors:\n", len(p.Errors))
+			for _, e := range p.Errors {
+				fmt.Println(e)
+			}
+			return
+		}
+		res := evaluator.Eval(program, object.NewEnvironment(nil))
+		if res.Type() == object.ERROR_OBJ {
+			fmt.Println(res)
+		}
 	default:
 		fmt.Println("usage: go run main.go (filename)")
 	}
