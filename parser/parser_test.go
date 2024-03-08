@@ -435,6 +435,7 @@ func TestArrayStatements(t *testing.T) {
 func TestIndexStatements(t *testing.T) {
 	input := `
 	[1,2,3][69]。
+	[1,2,3][1 + 1]。
 	`
 
 	l := lexer.New(input)
@@ -442,28 +443,42 @@ func TestIndexStatements(t *testing.T) {
 	program := p.ParseProgram()
 	checkParserErrors(p, t)
 
-	if len(program.Statements) != 1 {
+	if len(program.Statements) != 2 {
 		t.Errorf("len(program) expected 2 got %d", len(program.Statements))
 	}
 
-	for i, st := range program.Statements {
-		exprStatement, ok := st.(*ast.ExpressionStatement)
-		if !ok {
-			t.Errorf("[%d] expected type ast.ExpressionStatement got %T", i, st)
-		}
-		exp, ok := exprStatement.Expression.(*ast.IndexExpression)
-		if !ok {
-			t.Errorf("[%d] expected ast.IndexExpression got %T", i, exprStatement.Expression)
-		}
-		num, ok := exp.Index.(*ast.IntegerLiteral)
-		if !ok {
-			t.Errorf("[%d] expected type ast.IntegerLiteral got %T", i, exp.Index)
-		}
-		if num.Value != 69 {
-			t.Errorf("exp 69 got %d", num.Value)
-		}
-
+	exprStatement, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected type ast.ExpressionStatement got %T", program.Statements[0])
 	}
+	exp, ok := exprStatement.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Errorf("expected ast.IndexExpression got %T", exprStatement.Expression)
+	}
+	num, ok := exp.Index.(*ast.IntegerLiteral)
+	if !ok {
+		t.Errorf("expected type ast.IntegerLiteral got %T", exp.Index)
+	}
+	if num.Value != 69 {
+		t.Errorf("exp 69 got %d", num.Value)
+	}
+
+	exprStatement, ok = program.Statements[1].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("expected type ast.ExpressionStatement got %T", program.Statements[0])
+	}
+	exp, ok = exprStatement.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Errorf("expected ast.IndexExpression got %T", exprStatement.Expression)
+	}
+	ie, ok := exp.Index.(*ast.InfixExpression)
+	if !ok {
+		t.Errorf("expected type ast.IntegerLiteral got %T", exp.Index)
+	}
+	if ie.Infix.TokenType != token.ADD {
+		t.Errorf("exp + got %s", ie.Infix)
+	}
+
 }
 
 func TestWhileLoop(t *testing.T) {

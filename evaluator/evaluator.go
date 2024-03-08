@@ -92,7 +92,11 @@ func EvalExpression(expression ast.Expression, env *object.Environment) object.O
 		}
 		return arr
 	case *ast.IndexExpression:
-		idx, ok := expression.Index.(*ast.IntegerLiteral)
+		idxObj := EvalExpression(expression.Index, env)
+		if object.ERROR.Message != "" {
+			return object.ERROR
+		}
+		idx, ok := idxObj.(*object.Integer)
 		if !ok {
 			return Errorf("type error", "index must be number")
 		}
